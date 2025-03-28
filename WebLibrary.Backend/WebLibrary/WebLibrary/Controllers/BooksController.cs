@@ -21,7 +21,7 @@ namespace WebLibrary.Controllers;
 
         // GET: api/books
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<BookDto>>> GetAllBooks()
+        public async Task<ActionResult<IEnumerable<GetBookRequestDto>>> GetAllBooks()
         {
             var books = await _bookService.GetAllBooksAsync();
             return Ok(books);
@@ -29,7 +29,7 @@ namespace WebLibrary.Controllers;
 
         // GET: api/books/{id}
         [HttpGet("{id}")]
-        public async Task<ActionResult<BookDto>> GetBookById(Guid id)
+        public async Task<ActionResult<GetBookRequestDto>> GetBookById(Guid id)
         {
             var book = await _bookService.GetBookByIdAsync(id);
             if (book == null)
@@ -42,7 +42,7 @@ namespace WebLibrary.Controllers;
 
         // GET: api/books/isbn/{isbn}
         [HttpGet("isbn/{isbn}")]
-        public async Task<ActionResult<BookDto>> GetBookByIsbn(string isbn)
+        public async Task<ActionResult<GetBookRequestDto>> GetBookByIsbn(string isbn)
         {
             var book = await _bookService.GetBookByIsbnAsync(isbn);
             if (book == null)
@@ -53,7 +53,7 @@ namespace WebLibrary.Controllers;
         }
         
         [HttpGet("paginated")]
-        public async Task<ActionResult<IEnumerable<BookDto>>> GetPaginatedBooks([FromQuery] PaginatedBookFilter filter)
+        public async Task<ActionResult<IEnumerable<GetBookRequestDto>>> GetPaginatedBooks([FromQuery] PaginatedBookFilter filter)
         {
             var books = await _bookService.GetPaginatedBooksAsync(filter);
             return Ok(books);
@@ -62,7 +62,7 @@ namespace WebLibrary.Controllers;
 
         // GET: api/books/author/{authorId}
         [HttpGet("author/{authorId}")]
-        public async Task<ActionResult<IEnumerable<BookDto>>> GetBooksByAuthor(Guid authorId)
+        public async Task<ActionResult<IEnumerable<GetBookRequestDto>>> GetBooksByAuthor(Guid authorId)
         {
             var books = await _bookService.GetBooksByAuthorAsync(authorId);
             return Ok(books);
@@ -70,19 +70,31 @@ namespace WebLibrary.Controllers;
 
         // POST: api/books
         [HttpPost]
-        public async Task<ActionResult> AddBook([FromForm] BookDto bookDto)
+        [HttpPost("add-book")]
+        public async Task<IActionResult> AddBook([FromForm] BookDto bookDto)
         {
             if (bookDto.ImageFile != null)
             {
                 using var memoryStream = new MemoryStream();
                 await bookDto.ImageFile.CopyToAsync(memoryStream);
-                bookDto.ImageData = memoryStream.ToArray();
             }
 
             await _bookService.AddBookAsync(bookDto);
-            return CreatedAtAction(nameof(GetBookById), new { id = bookDto.BookId }, bookDto);
+            return Ok();
         }
 
+
+        [HttpGet("image/{id}")]
+        public async Task<IActionResult> GetBookImage(Guid id)
+        {
+            var imageData = await _bookService.GetBookImageAsync(id);
+            if (imageData == null)
+            {
+                return NotFound("Изображение не найдено");
+            }
+
+            return File(imageData, "image/jpeg"); // Возвращаем изображение как файл
+        }
         
         [HttpPost("{bookId}/borrow")]
         public async Task<IActionResult> BorrowBook(Guid bookId, [FromQuery] Guid userId)
@@ -117,6 +129,13 @@ namespace WebLibrary.Controllers;
         public async Task<ActionResult> DeleteBook(Guid id)
         {
             await _bookService.DeleteBookAsync(id);
+            return NoContent();
+        }
+        
+        [HttpDelete("image/{id}")]
+        public async Task<IActionResult> RemoveBookImage(Guid id)
+        {
+            await _bookService.RemoveBookFromCache(id);
             return NoContent();
         }
     }

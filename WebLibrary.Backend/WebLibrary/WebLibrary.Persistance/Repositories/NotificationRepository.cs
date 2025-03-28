@@ -55,4 +55,12 @@ public class NotificationRepository : INotificationRepository
             .Where(n => n.UserId == userId)
             .ToListAsync();
     }
+    
+    public async Task<IEnumerable<Book>> GetOverdueBooksAsync()
+    {
+        return await _context.Books
+            .Where(b => b.BorrowedAt <= DateTime.UtcNow.AddDays(14) && !b.IsAvailable)
+            .ToListAsync();
+    }
+
 }

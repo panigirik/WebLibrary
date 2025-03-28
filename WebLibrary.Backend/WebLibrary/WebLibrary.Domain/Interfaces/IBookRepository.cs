@@ -19,6 +19,7 @@ public interface IBookRepository
     Task DeleteAsync(Guid id);
     Task<IEnumerable<Book>> GetBooksByAuthorIdAsync(Guid authorId);
     
+    Task<IEnumerable<Book>> GetOverdueBooksAsync();
 
 
 }

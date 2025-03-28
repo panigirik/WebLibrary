@@ -78,6 +78,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\WebLibrary.Application\WebLibrary.Application.csproj" />
+      <ProjectReference Include="..\WebLibrary.BackgroundService\WebLibrary.BackgroundService.csproj" />
       <ProjectReference Include="..\WebLibrary.Indentity\WebLibrary.Indentity.csproj" />
       <ProjectReference Include="..\WebLibrary.Persistance\WebLibrary.Persistance.csproj" />
     </ItemGroup>

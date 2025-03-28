@@ -1,4 +1,5 @@
 using WebLibrary.Application.Extensions;
+using WebLibrary.BackgroundService.Extensions;
 using WebLibrary.Indentity.Extensions;
 using WebLibrary.Persistance.Extensions;
 
@@ -13,6 +14,7 @@ public class Program
         
         builder.Services.AddAuthorization();
         builder.Services.AddCoreApplicationServices();
+        builder.Services.AddInfrastructureBackgroundServices(builder.Configuration);
         builder.Services.AddInfrastructureRepositoriesServices();
         
         builder.Services.AddSwaggerAuthentication();

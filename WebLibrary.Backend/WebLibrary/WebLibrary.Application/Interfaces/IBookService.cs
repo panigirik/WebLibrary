@@ -5,15 +5,15 @@ namespace WebLibrary.Application.Interfaces;
 
 public interface IBookService
 {
-    Task<IEnumerable<BookDto>> GetAllBooksAsync();
+    Task<IEnumerable<GetBookRequestDto>> GetAllBooksAsync();
 
-    Task<BookDto?> GetBookByIdAsync(Guid id);
+    Task<GetBookRequestDto?> GetBookByIdAsync(Guid id);
 
-    Task<BookDto?> GetBookByIsbnAsync(string isbn);
+    Task<GetBookRequestDto?> GetBookByIsbnAsync(string isbn);
 
-    Task<IEnumerable<BookDto>> GetBooksByAuthorAsync(Guid authorId);
+    Task<IEnumerable<GetBookRequestDto>> GetBooksByAuthorAsync(Guid authorId);
 
-    Task<IEnumerable<BookDto>> GetPaginatedBooksAsync(PaginatedBookFilter filter);
+    Task<IEnumerable<GetBookRequestDto>> GetPaginatedBooksAsync(PaginatedBookFilter filter);
 
     Task AddBookAsync(BookDto bookDto);
 
@@ -24,4 +24,8 @@ public interface IBookService
     Task<bool> BorrowBookAsync(Guid bookId, Guid userId);
     
     Task<bool> ReturnBookAsync(Guid bookId, Guid userId);
+
+    Task<byte[]?> GetBookImageAsync(Guid bookId);
+
+    Task RemoveBookFromCache(Guid bookId);
 }
