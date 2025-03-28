@@ -1,25 +1,58 @@
-var builder = WebApplication.CreateBuilder(args);
+using WebLibrary.Application.Extensions;
+using WebLibrary.Indentity.Extensions;
+using WebLibrary.Persistance.Extensions;
 
-// Add services to the container.
-builder.Services.AddRazorPages();
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+public class Program
 {
-    app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+    public static void Main(string[] args)
+    {
+        var builder = WebApplication.CreateBuilder(args);
+
+        builder.Services.AddAppDbContext(builder.Configuration);
+        builder.Services.AddInfrastructureIdentityServices(builder.Configuration);
+        
+        builder.Services.AddAuthorization();
+        builder.Services.AddCoreApplicationServices();
+        builder.Services.AddInfrastructureRepositoriesServices();
+        
+        builder.Services.AddSwaggerAuthentication();
+        
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen();
+        builder.Services.AddControllers();
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("AllowAllOrigins",
+                corsPolicyBuilder => corsPolicyBuilder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader());
+        });
+
+        var app = builder.Build();
+        
+        if (!app.Environment.IsDevelopment())
+        {
+            app.UseExceptionHandler("/Error");
+            app.UseHsts();
+        }
+
+        app.UseStaticFiles();
+
+        app.UseRouting();
+        
+        // Применение политики CORS
+        app.UseCors("AllowAllOrigins");
+        app.MapControllers();
+        app.UseAuthorization();
+
+        // Включение Swagger UI (только в режиме разработки)
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseSwagger(); // Включение Swagger
+            app.UseSwaggerUI(); // Включение Swagger UI (интерфейс для тестирования API)
+        }
+
+        // Запуск приложения
+        app.Run();
+    }
 }
-
-//app.UseHttpsRedirection();
-app.UseStaticFiles();
-
-app.UseRouting();
-
-app.UseAuthorization();
-
-app.MapRazorPages();
-
-app.Run();
