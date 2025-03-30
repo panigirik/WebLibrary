@@ -1,12 +1,3 @@
-Project Setup Guide
-Prerequisites
-To run this project locally, you will need the following services running on your machine:
-
-PostgreSQL (with database Library)
-
-Redis
-
-ClamAV
 
 Additionally, make sure you have the following installed:
 
