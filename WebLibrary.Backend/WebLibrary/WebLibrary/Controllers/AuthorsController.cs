@@ -6,17 +6,28 @@ using WebLibrary.Domain.Exceptions;
 
 namespace WebLibrary.Controllers;
 
+/// <summary>
+/// Контроллер для работы с авторами.
+/// </summary>
 [Route("api/[controller]")]
 [ApiController]
 public class AuthorsController : ControllerBase
 {
     private readonly IAuthorService _authorService;
 
+    /// <summary>
+    /// Инициализирует новый экземпляр <see cref="AuthorsController"/>.
+    /// </summary>
+    /// <param name="authorService">Сервис для работы с авторами.</param>
     public AuthorsController(IAuthorService authorService)
     {
         _authorService = authorService ?? throw new ArgumentNullException(nameof(authorService));
     }
 
+    /// <summary>
+    /// Получает список всех авторов.
+    /// </summary>
+    /// <returns>Список авторов.</returns>
     [HttpGet]
     public async Task<IActionResult> GetAllAuthors()
     {
@@ -24,6 +35,11 @@ public class AuthorsController : ControllerBase
         return Ok(authors);
     }
 
+    /// <summary>
+    /// Получает автора по его идентификатору.
+    /// </summary>
+    /// <param name="id">Идентификатор автора.</param>
+    /// <returns>Автор с указанным идентификатором.</returns>
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetAuthorById(Guid id)
     {
@@ -37,6 +53,11 @@ public class AuthorsController : ControllerBase
         return Ok(author);
     }
 
+    /// <summary>
+    /// Добавляет нового автора.
+    /// </summary>
+    /// <param name="authorDto">Данные автора для добавления.</param>
+    /// <returns>Статус выполнения операции.</returns>
     [HttpPost] [Authorize(Policy = "AdminOnly")]
     public async Task<IActionResult> AddAuthor([FromBody] AuthorDto authorDto)
     {
@@ -47,6 +68,12 @@ public class AuthorsController : ControllerBase
         return CreatedAtAction(nameof(GetAuthorById), new { id = authorDto.AuthorId }, authorDto);
     }
 
+    /// <summary>
+    /// Обновляет информацию об авторе.
+    /// </summary>
+    /// <param name="id">Идентификатор автора.</param>
+    /// <param name="authorDto">Данные для обновления.</param>
+    /// <returns>Статус выполнения операции.</returns>
     [HttpPut("{id:guid}")] [Authorize(Policy = "AdminOnly")]
     public async Task<IActionResult> UpdateAuthor(Guid id, [FromBody] AuthorDto authorDto)
     {
@@ -57,6 +84,11 @@ public class AuthorsController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Удаляет автора.
+    /// </summary>
+    /// <param name="id">Идентификатор автора.</param>
+    /// <returns>Статус выполнения операции.</returns>
     [HttpDelete("{id:guid}")] [Authorize(Policy = "AdminOnly")]
     public async Task<IActionResult> DeleteAuthor(Guid id)
     {
@@ -67,6 +99,11 @@ public class AuthorsController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Получает список книг автора.
+    /// </summary>
+    /// <param name="authorId">Идентификатор автора.</param>
+    /// <returns>Список книг автора.</returns>
     [HttpGet("{authorId:guid}/books")]
     public async Task<IActionResult> GetBooksByAuthor(Guid authorId)
     {

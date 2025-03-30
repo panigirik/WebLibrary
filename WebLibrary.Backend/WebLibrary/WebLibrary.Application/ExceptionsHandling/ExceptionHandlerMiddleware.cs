@@ -6,17 +6,29 @@ using WebLibrary.Domain.Exceptions;
 
 namespace WebLibrary.Application.ExceptionsHandling;
 
+/// <summary>
+/// Класс обработки исключений.
+/// </summary>
 public class ExceptionHandlerMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly ILogger<ExceptionHandlerMiddleware> _logger;
 
+    /// <summary>
+    /// Инициализирует новый экземпляр <see cref="ExceptionHandlerMiddleware"/>.
+    /// </summary>
+    /// <param name="next">Следующий обработчик запроса.</param>
+    /// <param name="logger">Логгер для записи информации об ошибках.</param>
     public ExceptionHandlerMiddleware(RequestDelegate next, ILogger<ExceptionHandlerMiddleware> logger)
     {
         _next = next;
         _logger = logger;
     }
 
+    /// <summary>
+    /// Вызывает следующий обработчик запроса и обрабатывает возможные исключения.
+    /// </summary>
+    /// <param name="context">Контекст HTTP-запроса.</param>
     public async Task InvokeAsync(HttpContext context) 
     {
         try
@@ -30,9 +42,15 @@ public class ExceptionHandlerMiddleware
         }
     }
 
+    /// <summary>
+    /// Обрабатывает исключение и формирует ответ с соответствующим HTTP-статусом.
+    /// </summary>
+    /// <param name="context">Контекст HTTP-запроса.</param>
+    /// <param name="exception">Объект исключения.</param>
     private static Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
         context.Response.ContentType = "application/json";
+        
         var statusCode = exception switch
         {
             UnauthorizedException => (int)HttpStatusCode.Unauthorized,

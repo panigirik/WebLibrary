@@ -1,15 +1,41 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using WebLibrary.Domain.Enums;
 
-namespace WebLibrary.Domain.Entities;
-
-public class User
+namespace WebLibrary.Domain.Entities
 {
-    public Guid UserId { get; set; } // Уникальный идентификатор пользователя
-    public string UserName { get; set; } // Логин пользователя
-    public string Email { get; set; } // Почта пользователя
-    public string PasswordHash { get; set; } // Хеш пароля
-    public Roles Role { get; set; } // Роль (User, Admin)
-    
-    public List<Book> BorrowedBooks { get; set; } = new(); // Взятые книги
+    /// <summary>
+    /// Представляет пользователя системы.
+    /// </summary>
+    public class User
+    {
+        /// <summary>
+        /// Уникальный идентификатор пользователя.
+        /// </summary>
+        public Guid UserId { get; set; }
+
+        /// <summary>
+        /// Логин пользователя.
+        /// </summary>
+        public string UserName { get; set; }
+
+        /// <summary>
+        /// Электронная почта пользователя.
+        /// </summary>
+        public string Email { get; set; }
+
+        /// <summary>
+        /// Хеш пароля пользователя.
+        /// </summary>
+        public string PasswordHash { get; set; }
+
+        /// <summary>
+        /// Роль пользователя (например, User или Admin).
+        /// </summary>
+        public Roles Role { get; set; }
+
+        /// <summary>
+        /// Список книг, взятых пользователем.
+        /// </summary>
+        public List<Book> BorrowedBooks { get; set; } = new();
+    }
 }

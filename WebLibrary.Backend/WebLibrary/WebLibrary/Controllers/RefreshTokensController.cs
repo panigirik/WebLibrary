@@ -3,8 +3,14 @@ using Microsoft.AspNetCore.Mvc;
 using WebLibrary.Application.Dtos;
 using WebLibrary.Application.Interfaces;
 
+
+
 namespace WebLibrary.Controllers;
 
+    /// <summary>
+    /// Контроллер для управления refresh-токенами.
+    /// <remarks>Контроллер для наглядности.</remarks>>
+    ///</summary>
     [Route("api/[controller]")]
     [ApiController]
     public class RefreshTokensController : ControllerBase
@@ -18,7 +24,11 @@ namespace WebLibrary.Controllers;
             _mapper = mapper;
         }
 
-        // GET: api/refreshtokens
+        /// <summary>
+        /// Инициализирует новый экземпляр <see cref="RefreshTokensController"/>.
+        /// </summary>
+        /// <param name="refreshTokenService">Сервис для работы с refresh-токенами.</param>
+        /// <param name="mapper">Маппер для преобразования данных.</param>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<RefreshTokenDto>>> GetAllRefreshTokens()
         {
@@ -26,7 +36,11 @@ namespace WebLibrary.Controllers;
             return Ok(tokens);
         }
 
-        // GET: api/refreshtokens/{id}
+        /// <summary>
+        /// Получить refresh-токен по идентификатору.
+        /// </summary>
+        /// <param name="id">Идентификатор refresh-токена.</param>
+        /// <returns>Refresh-токен с указанным идентификатором.</returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<RefreshTokenDto>> GetRefreshTokenById(Guid id)
         {
@@ -38,7 +52,11 @@ namespace WebLibrary.Controllers;
             return Ok(token);
         }
 
-        // GET: api/refreshtokens/user/{userId}
+        /// <summary>
+        /// Получить refresh-токен по идентификатору пользователя.
+        /// </summary>
+        /// <param name="userId">Идентификатор пользователя.</param>
+        /// <returns>Refresh-токен пользователя.</returns>
         [HttpGet("user/{userId}")]
         public async Task<ActionResult<RefreshTokenDto>> GetRefreshTokenByUserId(Guid userId)
         {
@@ -50,7 +68,11 @@ namespace WebLibrary.Controllers;
             return Ok(token);
         }
 
-        // POST: api/refreshtokens
+        /// <summary>
+        /// Добавить новый refresh-токен.
+        /// </summary>
+        /// <param name="refreshTokenDto">Данные для создания нового refresh-токена.</param>
+        /// <returns>Результат операции добавления refresh-токена.</returns>
         [HttpPost]
         public async Task<ActionResult> AddRefreshToken([FromBody] RefreshTokenDto refreshTokenDto)
         {
@@ -58,7 +80,11 @@ namespace WebLibrary.Controllers;
             return CreatedAtAction(nameof(GetRefreshTokenById), new { id = refreshTokenDto.RefreshTokenId }, refreshTokenDto);
         }
 
-        // PUT: api/refreshtokens/{id}/revoke
+        /// <summary>
+        /// Отозвать refresh-токен.
+        /// </summary>
+        /// <param name="id">Идентификатор refresh-токена.</param>
+        /// <returns>Результат операции отзыва токена.</returns>
         [HttpPut("{id}/revoke")]
         public async Task<ActionResult> RevokeRefreshToken(Guid id)
         {
@@ -66,7 +92,11 @@ namespace WebLibrary.Controllers;
             return NoContent();
         }
 
-        // DELETE: api/refreshtokens/{id}
+        /// <summary>
+        /// Удалить refresh-токен.
+        /// </summary>
+        /// <param name="id">Идентификатор refresh-токена.</param>
+        /// <returns>Результат операции удаления.</returns>
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteRefreshToken(Guid id)
         {

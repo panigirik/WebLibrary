@@ -11,7 +11,7 @@ public enum TypeOfSort
     Date = 1,
 
     /// <summary>
-    /// Сортировка по количеству лайков.
+    /// Сортировка по автору.
     /// </summary>
     Author = 2,
     

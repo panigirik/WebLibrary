@@ -1,7 +1,18 @@
-﻿namespace WebLibrary.Application.Requests;
-
-public class LoginRequest
+﻿namespace WebLibrary.Application.Requests
 {
-    public string Email { get; set; }
-    public string Password { get; set; }
+    /// <summary>
+    /// Запрос для выполнения входа в систему.
+    /// </summary>
+    public class LoginRequest
+    {
+        /// <summary>
+        /// Электронная почта пользователя.
+        /// </summary>
+        public string Email { get; set; }
+
+        /// <summary>
+        /// Пароль пользователя.
+        /// </summary>
+        public string Password { get; set; }
+    }
 }

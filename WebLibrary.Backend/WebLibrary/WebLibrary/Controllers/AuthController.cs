@@ -10,6 +10,9 @@ using LoginRequest = WebLibrary.Application.Requests.LoginRequest;
 
 namespace WebLibrary.Controllers;
 
+/// <summary>
+/// Контроллер для аутентификации пользователей.
+/// </summary>
 [Route("api/[controller]")]
 [ApiController]
 public class AuthController : ControllerBase
@@ -19,6 +22,13 @@ public class AuthController : ControllerBase
     private readonly IUserService _userService;
     private readonly IValidationService _validationService;
 
+    /// <summary>
+    /// Инициализирует новый экземпляр <see cref="AuthController"/>.
+    /// </summary>
+    /// <param name="jwtTokenService">Сервис для работы с JWT токенами.</param>
+    /// <param name="refreshTokenService">Сервис для работы с refresh токенами.</param>
+    /// <param name="userService">Сервис для работы с пользователями.</param>
+    /// <param name="validationService">Сервис для валидации данных.</param>
     public AuthController(JwtTokenService jwtTokenService, IRefreshTokenService refreshTokenService,
         IUserService userService, IValidationService validationService)
     {
@@ -28,40 +38,39 @@ public class AuthController : ControllerBase
         _validationService = validationService;
     }
 
+    /// <summary>
+    /// Выполняет вход пользователя, генерирует JWT токен.
+    /// </summary>
+    /// <param name="request">Запрос на вход с email и паролем.</param>
+    /// <returns>Токен доступа и refresh токен.</returns>
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
-        // Сначала проверяем корректность входных данных
         var validationResult = await _validationService.ValidateLoginRequestAsync(request);
         if (!validationResult.IsValid)
         {
             return BadRequest(validationResult.Errors.Select(e => e.ErrorMessage));
         }
 
-        // Проверяем, существует ли пользователь с таким email
-        var user = await _userService.GetUserByEmailAsync(request.Email);
+       var user = await _userService.GetUserByEmailAsync(request.Email);
         if (user == null)
         {
-            // Возвращаем детализированное сообщение, если пользователь не найден
-            return Unauthorized("Invalid email or password"); // В данном случае общее сообщение
+            return Unauthorized("Invalid email or password");
         }
     
-        // Логируем хэш пароля, чтобы удостовериться в его правильности
-        Console.WriteLine($"Stored hash: {user.PasswordHash}");
+        Console.WriteLine($"Stored hash: {user.PasswordHash}"); ///////////////////
 
-        // Проверяем правильность пароля
+        
         var isPasswordValid = BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash);
         if (!isPasswordValid)
         {
-            // Возвращаем ошибку, если пароль неверный
-            return Unauthorized("Invalid email or password");
+           return Unauthorized("Invalid email or password");
         }
 
-        // Генерация токенов после успешной авторизации
+        
         var accessToken = _jwtTokenService.GenerateAccessToken(user.UserId, user.RoleType);
         var refreshToken = _jwtTokenService.GenerateRefreshToken(user.UserId);
 
-        // Сохраняем refresh token в базе данных
         await _refreshTokenService.AddRefreshTokenAsync(new RefreshTokenDto
         {
             RefreshTokenId = refreshToken.RefreshTokenId,
@@ -70,13 +79,16 @@ public class AuthController : ControllerBase
             Expires = refreshToken.Expires,
             IsRevoked = refreshToken.IsRevoked
         });
-
-        // Возвращаем токены пользователю
+        
         return Ok(new { AccessToken = accessToken, RefreshToken = refreshToken.Token });
     }
 
 
-
+    /// <summary>
+    /// Обновляет access токен с использованием refresh токена.
+    /// </summary>
+    /// <param name="request">Запрос с refresh токеном.</param>
+    /// <returns>Новый access токен.</returns>
     [HttpPost("refresh")]
     public async Task<IActionResult> Refresh([FromBody] RefreshRequest request)
     {
@@ -101,7 +113,10 @@ public class AuthController : ControllerBase
     }
 
 
-
+    /// <summary>
+    /// Выход из системы, отзывается refresh токен.
+    /// </summary>
+    /// <returns>Сообщение об успешном выходе.</returns>
     [HttpPost("logout")]
     [Authorize]
     public async Task<IActionResult> Logout()

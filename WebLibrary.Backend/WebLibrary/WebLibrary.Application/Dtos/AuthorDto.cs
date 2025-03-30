@@ -1,11 +1,37 @@
 ﻿namespace WebLibrary.Application.Dtos;
 
+/// <summary>
+/// DTO (Data Transfer Object) для представления информации об авторе.
+/// </summary>
 public class AuthorDto
 {
-    public Guid AuthorId { get; set; } // Уникальный идентификатор
-    public string FirstName { get; set; } // Имя автора
-    public string LastName { get; set; } // Фамилия автора
-    public DateTime DateOfBirth { get; set; } // Дата рождения
-    public string Country { get; set; } // Страна происхождения
-    public ICollection<BookDto> Books { get; set; } // Связь с книгами
+    /// <summary>
+    /// Уникальный идентификатор автора.
+    /// </summary>
+    public Guid AuthorId { get; set; }
+
+    /// <summary>
+    /// Имя автора.
+    /// </summary>
+    public string FirstName { get; set; }
+
+    /// <summary>
+    /// Фамилия автора.
+    /// </summary>
+    public string LastName { get; set; }
+
+    /// <summary>
+    /// Дата рождения автора.
+    /// </summary>
+    public DateTime DateOfBirth { get; set; }
+
+    /// <summary>
+    /// Страна происхождения автора.
+    /// </summary>
+    public string Country { get; set; }
+
+    /// <summary>
+    /// Коллекция книг, написанных автором.
+    /// </summary>
+    public ICollection<BookDto> Books { get; set; }
 }

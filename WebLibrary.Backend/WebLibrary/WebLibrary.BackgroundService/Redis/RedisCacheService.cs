@@ -3,29 +3,53 @@ using Microsoft.Extensions.Caching.Distributed;
 
 namespace WebLibrary.BackgroundService.Redis;
 
-public class RedisCacheService
-{
-    private readonly IDistributedCache _cache;
-    
-    public RedisCacheService(IDistributedCache cache)
+    /// <summary>
+    /// Сервис для работы с кэшем Redis.
+    /// </summary>
+    public class RedisCacheService
     {
-        _cache = cache;
-    }
+        private readonly IDistributedCache _cache;
 
-    public async Task SetAsync<T>(string key, T value, DistributedCacheEntryOptions options)
-    {
-        var jsonData = JsonSerializer.Serialize(value);
-        await _cache.SetStringAsync(key, jsonData, options);
-    }
+        /// <summary>
+        /// Конструктор для инициализации с кэшем Redis.
+        /// </summary>
+        /// <param name="cache">Объект кэша Redis.</param>
+        public RedisCacheService(IDistributedCache cache)
+        {
+            _cache = cache;
+        }
 
-    public async Task<T?> GetAsync<T>(string key)
-    {
-        var jsonData = await _cache.GetStringAsync(key);
-        return jsonData != null ? JsonSerializer.Deserialize<T>(jsonData) : default;
-    }
+        /// <summary>
+        /// Сохранение данных в Redis.
+        /// </summary>
+        /// <typeparam name="T">Тип данных для сохранения.</typeparam>
+        /// <param name="key">Ключ для данных.</param>
+        /// <param name="value">Данные для сохранения.</param>
+        /// <param name="options">Опции для записи в кэш.</param>
+        public async Task SetAsync<T>(string key, T value, DistributedCacheEntryOptions options)
+        {
+            var jsonData = JsonSerializer.Serialize(value);
+            await _cache.SetStringAsync(key, jsonData, options);
+        }
 
-    public async Task RemoveAsync(string key)
-    {
-        await _cache.RemoveAsync(key);
+        /// <summary>
+        /// Получение данных из Redis.
+        /// </summary>
+        /// <typeparam name="T">Тип данных, которые нужно получить.</typeparam>
+        /// <param name="key">Ключ для данных.</param>
+        /// <returns>Данные из кэша или null, если данные не найдены.</returns>
+        public async Task<T?> GetAsync<T>(string key)
+        {
+            var jsonData = await _cache.GetStringAsync(key);
+            return jsonData != null ? JsonSerializer.Deserialize<T>(jsonData) : default;
+        }
+
+        /// <summary>
+        /// Удаление данных из Redis.
+        /// </summary>
+        /// <param name="key">Ключ для удаления.</param>
+        public async Task RemoveAsync(string key)
+        {
+            await _cache.RemoveAsync(key);
+        }
     }
-}

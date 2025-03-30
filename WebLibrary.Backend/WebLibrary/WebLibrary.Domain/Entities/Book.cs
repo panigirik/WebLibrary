@@ -2,27 +2,78 @@
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http;
 
-namespace WebLibrary.Domain.Entities;
-
-public class Book
+namespace WebLibrary.Domain.Entities
 {
-    public Guid BookId { get; set; } // Уникальный идентификатор книги
-    public string ISBN { get; set; } // Международный стандартный книжный номер
-    public string Title { get; set; } // Название книги
-    public string Genre { get; set; } // Жанр
-    public string Description { get; set; } // Описание книги
-    public Guid AuthorId { get; set; } // Связь с автором
-    
-    [JsonIgnore] 
-    public byte[]? ImageData { get; set; }
-    public DateTime? BorrowedAt { get; set; } // Время, когда книгу взяли
-    public DateTime? ReturnBy { get; set; } // Время, когда книгу надо вернуть
-    public Guid? BorrowedById { get; set; }
-    
-    public User? BorrowedBy { get; set; }
+    /// <summary>
+    /// Представляет книгу.
+    /// </summary>
+    public class Book
+    {
+        /// <summary>
+        /// Уникальный идентификатор книги.
+        /// </summary>
+        public Guid BookId { get; set; }
 
-    [JsonIgnore] [NotMapped]
-    public IFormFile? ImageFile { get; set; } 
-    public bool IsAvailable { get; set; }
+        /// <summary>
+        /// Международный стандартный книжный номер (ISBN).
+        /// </summary>
+        public string ISBN { get; set; }
+
+        /// <summary>
+        /// Название книги.
+        /// </summary>
+        public string Title { get; set; }
+
+        /// <summary>
+        /// Жанр книги.
+        /// </summary>
+        public string Genre { get; set; }
+
+        /// <summary>
+        /// Описание книги.
+        /// </summary>
+        public string Description { get; set; }
+
+        /// <summary>
+        /// Идентификатор автора книги.
+        /// </summary>
+        public Guid AuthorId { get; set; }
+
+        /// <summary>
+        /// Изображение книги в виде байтов.
+        /// </summary>
+        [JsonIgnore] 
+        public byte[]? ImageData { get; set; }
+
+        /// <summary>
+        /// Время, когда книгу взяли.
+        /// </summary>
+        public DateTime? BorrowedAt { get; set; }
+
+        /// <summary>
+        /// Время, когда книгу нужно вернуть.
+        /// </summary>
+        public DateTime? ReturnBy { get; set; }
+
+        /// <summary>
+        /// Идентификатор пользователя, который взял книгу.
+        /// </summary>
+        public Guid? BorrowedById { get; set; }
+
+        /// <summary>
+        /// Связь с пользователем, который взял книгу.
+        /// </summary>
+        public User? BorrowedBy { get; set; }
+
+        /// <summary>
+        /// Файл изображения книги.
+        /// </summary>
+        [JsonIgnore] [NotMapped]
+        public IFormFile? ImageFile { get; set; }
+
+        /// <summary>
+        /// Флаг, указывающий, доступна ли книга для заимствования.
+        /// </summary>
+        public bool IsAvailable { get; set; }
+    }
 }
-

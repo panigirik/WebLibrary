@@ -12,79 +12,106 @@ using ValidationException = FluentValidation.ValidationException;
 
 namespace WebLibrary.ValidationServices.Services;
 
-public class BookValidationService : IBookValidationService
-{
-    private readonly ScanFileForMalwareHelper _scanFileForMalwareHelper;
-    private readonly IValidator<BookDto> _bookValidator;
-    private readonly int _maxFileSizeMb;
-    private readonly int _maxResolution;
-    private readonly string[] _allowedFormats;
-    private readonly string[] _forbiddenFormats;
-
-    public BookValidationService(ScanFileForMalwareHelper scanFileForMalwareHelper, IConfiguration configuration)
+    /// <summary>
+    /// Сервис для валидации книг.
+    /// </summary>
+    public class BookValidationService : IBookValidationService
     {
-        _scanFileForMalwareHelper = scanFileForMalwareHelper;
-        _bookValidator = new BookValidator();
-        _maxFileSizeMb = int.Parse(configuration["BookAttachment:MaxFileSizeMB"]);
-        _maxResolution = int.Parse(configuration["BookAttachment:MaxResolution"]);
-        _allowedFormats = configuration.GetSection("BookAttachment:AllowedFormats").Get<string[]>() ?? Array.Empty<string>();
-        _forbiddenFormats = configuration.GetSection("BookAttachment:ForbiddenFormats").Get<string[]>() ?? Array.Empty<string>();
-    }
+        private readonly ScanFileForMalwareHelper _scanFileForMalwareHelper;
+        private readonly IValidator<BookDto> _bookValidator;
+        private readonly int _maxFileSizeMb;
+        private readonly int _maxResolution;
+        private readonly string[] _allowedFormats;
+        private readonly string[] _forbiddenFormats;
 
-    public async Task<ValidationResult> ValidateBookAsync(BookDto bookDto, IFormFile file)
-    {
-        var validationResult = await _bookValidator.ValidateAsync(bookDto);
-        if (!validationResult.IsValid)
+        /// <summary>
+        /// Инициализирует новый экземпляр <see cref="BookValidationService"/>.
+        /// </summary>
+        /// <param name="scanFileForMalwareHelper">Сервис для проверки файлов на вирусы.</param>
+        /// <param name="configuration">Конфигурация приложения.</param>
+        public BookValidationService(ScanFileForMalwareHelper scanFileForMalwareHelper, IConfiguration configuration)
         {
+            _scanFileForMalwareHelper = scanFileForMalwareHelper;
+            _bookValidator = new BookValidator();
+            _maxFileSizeMb = int.Parse(configuration["BookAttachment:MaxFileSizeMB"]);
+            _maxResolution = int.Parse(configuration["BookAttachment:MaxResolution"]);
+            _allowedFormats = configuration.GetSection("BookAttachment:AllowedFormats").Get<string[]>() ?? Array.Empty<string>();
+            _forbiddenFormats = configuration.GetSection("BookAttachment:ForbiddenFormats").Get<string[]>() ?? Array.Empty<string>();
+        }
+
+        /// <summary>
+        /// Выполняет валидацию книги и её файла.
+        /// </summary>
+        /// <param name="bookDto">DTO книги.</param>
+        /// <param name="file">Файл, прикрепленный к книге.</param>
+        /// <returns>Результат валидации.</returns>
+        public async Task<ValidationResult> ValidateBookAsync(BookDto bookDto, IFormFile file)
+        {
+            var validationResult = await _bookValidator.ValidateAsync(bookDto);
+            if (!validationResult.IsValid)
+            {
+                return validationResult;
+            }
+
+            try
+            {
+                ValidateFileFormat(file);
+                ValidateFileSize(file);
+                await ValidateImageResolutionAsync(file);
+                await _scanFileForMalwareHelper.ScanFileAsync(file);
+            }
+            catch (ValidationException ex)
+            {
+                return new ValidationResult(new List<ValidationFailure>
+                {
+                    new ValidationFailure("File", ex.Message)
+                });
+            }
+
             return validationResult;
         }
-        
-        try
+
+        /// <summary>
+        /// Проверяет формат файла.
+        /// </summary>
+        /// <param name="file">Файл, прикрепленный к книге.</param>
+        private void ValidateFileFormat(IFormFile file)
         {
-            ValidateFileFormat(file);
-            ValidateFileSize(file);
-            await ValidateImageResolutionAsync(file);
-            await _scanFileForMalwareHelper.ScanFileAsync(file);
-        }
-        catch (ValidationException ex)
-        {
-            return new ValidationResult(new List<ValidationFailure>
+            string extension = Path.GetExtension(file.FileName).ToLower();
+            if (_forbiddenFormats.Contains(extension))
             {
-                new ValidationFailure("File", ex.Message)
-            });
+                throw new ValidationException($"File format {extension} is not allowed");
+            }
+            if (!_allowedFormats.Contains(extension))
+            {
+                throw new ForbiddenException($"Not allowed format {extension}");
+            }
         }
-        
-        return validationResult;
+
+        /// <summary>
+        /// Проверяет размер файла.
+        /// </summary>
+        /// <param name="file">Файл, прикрепленный к книге.</param>
+        private void ValidateFileSize(IFormFile file)
+        {
+            if (file.Length > _maxFileSizeMb * 1024 * 1024)
+            {
+                throw new ValidationException($"File size exceeds {_maxFileSizeMb}MB");
+            }
+        }
+
+        /// <summary>
+        /// Проверяет разрешение изображения в файле.
+        /// </summary>
+        /// <param name="file">Файл, прикрепленный к книге.</param>
+        private async Task ValidateImageResolutionAsync(IFormFile file)
+        {
+            using var stream = file.OpenReadStream();
+            using var image = await Image.LoadAsync(stream);
+            if (image.Width > _maxResolution || image.Height > _maxResolution)
+            {
+                throw new ValidationException($"Resolution bigger {_maxResolution}x{_maxResolution}");
+            }
+        }
     }
 
-    private void ValidateFileFormat(IFormFile file)
-    {
-        string extension = Path.GetExtension(file.FileName).ToLower();
-        if (_forbiddenFormats.Contains(extension))
-        {
-            throw new ValidationException($"File format {extension} is not allowed");
-        }
-        if (!_allowedFormats.Contains(extension))
-        {
-            throw new ForbiddenException($"Not allowed format {extension}");
-        }
-    }
-
-    private void ValidateFileSize(IFormFile file)
-    {
-        if (file.Length > _maxFileSizeMb * 1024 * 1024)
-        {
-            throw new ValidationException($"File size exceeds {_maxFileSizeMb}MB");
-        }
-    }
-
-    private async Task ValidateImageResolutionAsync(IFormFile file)
-    {
-        using var stream = file.OpenReadStream();
-        using var image = await Image.LoadAsync(stream);
-        if (image.Width > _maxResolution || image.Height > _maxResolution)
-        {
-            throw new ValidationException($"Resolution bigger {_maxResolution}x{_maxResolution}");
-        }
-    }
-}

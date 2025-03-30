@@ -5,6 +5,10 @@ using WebLibrary.Application.Interfaces;
 
 namespace WebLibrary.Controllers;
 
+    /// <summary>
+    /// Контроллер для управления уведомлениями.
+    /// <remarks>Контроллер для наглядности.</remarks>>
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class NotificationsController : ControllerBase
@@ -12,13 +16,21 @@ namespace WebLibrary.Controllers;
         private readonly INotificationService _notificationService;
         private readonly IMapper _mapper;
 
+        /// <summary>
+        /// Инициализирует новый экземпляр <see cref="NotificationsController"/>.
+        /// </summary>
+        /// <param name="notificationService">Сервис для работы с уведомлениями.</param>
+        /// <param name="mapper">Маппер для преобразования данных.</param>
         public NotificationsController(INotificationService notificationService, IMapper mapper)
         {
             _notificationService = notificationService;
             _mapper = mapper;
         }
 
-        // GET: api/notifications
+        /// <summary>
+        /// Получить все уведомления.
+        /// </summary>
+        /// <returns>Список всех уведомлений.</returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<NotificationDto>>> GetAllNotifications()
         {
@@ -26,7 +38,11 @@ namespace WebLibrary.Controllers;
             return Ok(notifications);
         }
 
-        // GET: api/notifications/{id}
+        /// <summary>
+        /// Получить уведомление по идентификатору.
+        /// </summary>
+        /// <param name="id">Идентификатор уведомления.</param>
+        /// <returns>Уведомление с указанным идентификатором.</returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<NotificationDto>> GetNotificationById(Guid id)
         {
@@ -38,7 +54,11 @@ namespace WebLibrary.Controllers;
             return Ok(notification);
         }
 
-        // GET: api/notifications/user/{userId}
+        /// <summary>
+        /// Получить уведомления пользователя по его идентификатору.
+        /// </summary>
+        /// <param name="userId">Идентификатор пользователя.</param>
+        /// <returns>Список уведомлений пользователя.</returns>
         [HttpGet("user/{userId}")]
         public async Task<ActionResult<IEnumerable<NotificationDto>>> GetNotificationsByUserId(Guid userId)
         {
@@ -46,7 +66,11 @@ namespace WebLibrary.Controllers;
             return Ok(notifications);
         }
 
-        // POST: api/notifications
+        /// <summary>
+        /// Добавить новое уведомление.
+        /// </summary>
+        /// <param name="notificationDto">Данные для создания нового уведомления.</param>
+        /// <returns>Результат операции добавления уведомления.</returns>
         [HttpPost]
         public async Task<ActionResult> AddNotification([FromBody] NotificationDto notificationDto)
         {
@@ -54,7 +78,11 @@ namespace WebLibrary.Controllers;
             return CreatedAtAction(nameof(GetNotificationById), new { id = notificationDto.NotificationId }, notificationDto);
         }
 
-        // PUT: api/notifications/{id}/markAsRead
+        /// <summary>
+        /// Пометить уведомление как прочитанное.
+        /// </summary>
+        /// <param name="id">Идентификатор уведомления.</param>
+        /// <returns>Результат операции.</returns>
         [HttpPut("{id}/markAsRead")]
         public async Task<ActionResult> MarkAsRead(Guid id)
         {
@@ -62,7 +90,11 @@ namespace WebLibrary.Controllers;
             return NoContent();
         }
 
-        // DELETE: api/notifications/{id}
+        /// <summary>
+        /// Удалить уведомление по идентификатору.
+        /// </summary>
+        /// <param name="id">Идентификатор уведомления.</param>
+        /// <returns>Результат операции удаления.</returns>
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteNotification(Guid id)
         {

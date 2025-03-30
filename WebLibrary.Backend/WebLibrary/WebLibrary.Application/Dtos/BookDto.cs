@@ -4,25 +4,65 @@ using Microsoft.AspNetCore.Http;
 
 namespace WebLibrary.Application.Dtos;
 
+/// <summary>
+/// DTO (Data Transfer Object) для представления информации о книге.
+/// </summary>
 public class BookDto
 {
-    public Guid BookId { get; set; } // Уникальный идентификатор книги
-    public string ISBN { get; set; } // Международный стандартный книжный номер
-    public string Title { get; set; } // Название книги
-    public string Genre { get; set; } // Жанр
-    public string Description { get; set; } // Описание книги
-    public Guid AuthorId { get; set; } // Связь с автором
-    
-    
-    public DateTime? BorrowedAt { get; set; } // Время, когда книгу взяли
-    public DateTime? ReturnBy { get; set; } // Время, когда книгу надо вернуть
+    /// <summary>
+    /// Уникальный идентификатор книги.
+    /// </summary>
+    public Guid BookId { get; set; }
+
+    /// <summary>
+    /// Международный стандартный книжный номер (ISBN).
+    /// </summary>
+    public string ISBN { get; set; }
+
+    /// <summary>
+    /// Название книги.
+    /// </summary>
+    public string Title { get; set; }
+
+    /// <summary>
+    /// Жанр книги.
+    /// </summary>
+    public string Genre { get; set; }
+
+    /// <summary>
+    /// Описание книги.
+    /// </summary>
+    public string Description { get; set; }
+
+    /// <summary>
+    /// Идентификатор автора книги (связь с автором).
+    /// </summary>
+    public Guid AuthorId { get; set; }
+
+    /// <summary>
+    /// Время, когда книгу взяли.
+    /// </summary>
+    public DateTime? BorrowedAt { get; set; }
+
+    /// <summary>
+    /// Время, когда книгу надо вернуть.
+    /// </summary>
+    public DateTime? ReturnBy { get; set; }
+
+    /// <summary>
+    /// Идентификатор пользователя, взявшего книгу.
+    /// </summary>
     public Guid? BorrowedById { get; set; }
-    
+
+    /// <summary>
+    /// Статус доступности книги (доступна/недоступна).
+    /// </summary>
     public bool IsAvailable { get; set; }
-    
-    [JsonIgnore] [NotMapped]
+
+    /// <summary>
+    /// Файл изображения книги (игнорируется при сериализации в JSON).
+    /// </summary>
+    [JsonIgnore]
+    [NotMapped]
     public IFormFile? ImageFile { get; set; }
-    
-    //[JsonIgnore]
-    //public string? ImageBase64 => ImageData != null ? Convert.ToBase64String(ImageData) : null; 
 }

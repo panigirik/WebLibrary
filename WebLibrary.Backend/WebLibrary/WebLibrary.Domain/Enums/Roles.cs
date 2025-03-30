@@ -1,8 +1,18 @@
-﻿namespace WebLibrary.Domain.Enums;
-
-public enum Roles
+﻿namespace WebLibrary.Domain.Enums
 {
-    Admin = 1,
-        
-    User = 2   
+    /// <summary>
+    /// Перечисление ролей пользователя.
+    /// </summary>
+    public enum Roles
+    {
+        /// <summary>
+        /// Роль администратора.
+        /// </summary>
+        Admin = 1,
+
+        /// <summary>
+        /// Роль обычного пользователя.
+        /// </summary>
+        User = 2
+    }
 }

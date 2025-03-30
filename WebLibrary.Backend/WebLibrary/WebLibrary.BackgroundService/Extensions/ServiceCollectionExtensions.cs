@@ -7,25 +7,27 @@ using WebLibrary.BackgroundService.Services;
 
 namespace WebLibrary.BackgroundService.Extensions;
 
-public static class ServiceCollectionExtensions
-{
-    public static void AddInfrastructureBackgroundServices(this IServiceCollection services,
-        IConfiguration configuration)
+    /// <summary>
+    /// Методы расширения для добавления служб инфраструктуры.
+    /// </summary>
+    public static class ServiceCollectionExtensions
     {
-        services.AddHostedService<OverdueBookNotificationService>();
-        
-        services.AddScoped<RedisCacheService>();
-        
-        services.AddDistributedMemoryCache();
-
-        services.AddScoped<ScanFileForMalwareHelper>();
-        
-        services.AddSingleton<RedisConnectionExtension>(); 
-        services.AddSingleton<IConnectionMultiplexer>(sp =>
+        /// <summary>
+        /// Добавление служб для фоновых задач.
+        /// </summary>
+        /// <param name="services">Коллекция сервисов.</param>
+        /// <param name="configuration">Конфигурация приложения.</param>
+        public static void AddInfrastructureBackgroundServices(this IServiceCollection services, IConfiguration configuration)
         {
-            var redisConnectionExtension = sp.GetRequiredService<RedisConnectionExtension>();
-            return redisConnectionExtension.Connect(); 
-        });
-
+            services.AddHostedService<OverdueBookNotificationService>();
+            services.AddScoped<RedisCacheService>();
+            services.AddDistributedMemoryCache();
+            services.AddScoped<ScanFileForMalwareHelper>();
+            services.AddSingleton<RedisConnectionExtension>(); 
+            services.AddSingleton<IConnectionMultiplexer>(sp =>
+            {
+                var redisConnectionExtension = sp.GetRequiredService<RedisConnectionExtension>();
+                return redisConnectionExtension.Connect();
+            });
+        }
     }
-}

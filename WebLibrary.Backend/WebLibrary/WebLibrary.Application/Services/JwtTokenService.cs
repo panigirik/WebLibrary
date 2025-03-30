@@ -9,15 +9,28 @@ using WebLibrary.Domain.Enums;
 
 namespace WebLibrary.Application.Services;
 
+/// <summary>
+/// Сервис для генерации JWT-токенов и Refresh-токенов.
+/// </summary>
 public class JwtTokenService
 {
     private readonly IConfiguration _configuration;
 
+    /// <summary>
+    /// Конструктор сервиса токенов.
+    /// </summary>
+    /// <param name="configuration">Конфигурация приложения.</param>
     public JwtTokenService(IConfiguration configuration)
     {
         _configuration = configuration;
     }
 
+    /// <summary>
+    /// Генерирует access-токен для указанного пользователя.
+    /// </summary>
+    /// <param name="userId">Идентификатор пользователя.</param>
+    /// <param name="role">Роль пользователя.</param>
+    /// <returns>Строка с JWT access-токеном.</returns>
     public string GenerateAccessToken(Guid userId, Roles role)
     {
         Console.WriteLine($"Generating token for user {userId} with role {role}");
@@ -42,8 +55,11 @@ public class JwtTokenService
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
-
-
+    /// <summary>
+    /// Генерирует refresh-токен для указанного пользователя.
+    /// </summary>
+    /// <param name="userId">Идентификатор пользователя.</param>
+    /// <returns>Объект RefreshToken.</returns>
     public RefreshToken GenerateRefreshToken(Guid userId)
     {
         using var rng = RandomNumberGenerator.Create();

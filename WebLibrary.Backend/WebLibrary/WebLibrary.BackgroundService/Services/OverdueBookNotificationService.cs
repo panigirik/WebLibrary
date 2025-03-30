@@ -7,66 +7,80 @@ using WebLibrary.Domain.Interfaces;
 
 namespace WebLibrary.BackgroundService.Services;
 
-public class OverdueBookNotificationService : Microsoft.Extensions.Hosting.BackgroundService
-{
-    private readonly IServiceScopeFactory _scopeFactory;
-    private readonly ILogger<OverdueBookNotificationService> _logger;
-    private readonly int _interval;
-
-    public OverdueBookNotificationService(IServiceScopeFactory scopeFactory,
-        ILogger<OverdueBookNotificationService> logger,
-        IConfiguration configuration)
+    /// <summary>
+    /// Сервис для отправки уведомлений о просроченных книгах.
+    /// </summary>
+    public class OverdueBookNotificationService : Microsoft.Extensions.Hosting.BackgroundService
     {
-        _scopeFactory = scopeFactory;
-        _logger = logger;
-        _interval = (int)TimeSpan.FromSeconds(configuration.GetValue<int>("Notifications:TimeSpan")).TotalMilliseconds;
+        private readonly IServiceScopeFactory _scopeFactory;
+        private readonly ILogger<OverdueBookNotificationService> _logger;
+        private readonly int _interval;
 
-
-    }
-
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-    {
-        while (!stoppingToken.IsCancellationRequested)
+        /// <summary>
+        /// Конструктор для инициализации сервиса.
+        /// </summary>
+        /// <param name="scopeFactory">Фабрика для создания скоупов.</param>
+        /// <param name="logger">Логгер для записей ошибок.</param>
+        /// <param name="configuration">Конфигурация для получения интервала уведомлений.</param>
+        public OverdueBookNotificationService(IServiceScopeFactory scopeFactory,
+            ILogger<OverdueBookNotificationService> logger,
+            IConfiguration configuration)
         {
-            try
+            _scopeFactory = scopeFactory;
+            _logger = logger;
+            _interval = (int)TimeSpan.FromSeconds(configuration.GetValue<int>("Notifications:TimeSpan")).TotalMilliseconds;
+        }
+
+        /// <summary>
+        /// Метод для выполнения фоново задачи.
+        /// </summary>
+        /// <param name="stoppingToken">Токен для отмены задачи.</param>
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        {
+            while (!stoppingToken.IsCancellationRequested)
             {
-                using var scope = _scopeFactory.CreateScope();
-                var bookRepository = scope.ServiceProvider.GetRequiredService<IBookRepository>();
-                var bookService = scope.ServiceProvider.GetRequiredService<IBookService>();
-                var notificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
-
-                var overdueBooks = await bookRepository.GetOverdueBooksAsync();
-
-                foreach (var book in overdueBooks)
+                try
                 {
-                    var bookDetails = await bookService.GetBookByIdAsync(book.BookId);
-                    if (bookDetails == null)
-                        continue;
+                    using var scope = _scopeFactory.CreateScope();
+                    var bookRepository = scope.ServiceProvider.GetRequiredService<IBookRepository>();
+                    var bookService = scope.ServiceProvider.GetRequiredService<IBookService>();
+                    var notificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
 
-                    var notification = new NotificationDto
+                    var overdueBooks = await bookRepository.GetOverdueBooksAsync();
+
+                    foreach (var book in overdueBooks)
                     {
-                        NotificationId = Guid.NewGuid(),
-                        UserId = bookDetails.BorrowedById,
-                        Message = $"Книга '{bookDetails.Title}' должна быть возвращена {book.BorrowedAt:dd.MM.yyyy}. Пожалуйста, верните её.",
-                        CreatedAt = DateTime.UtcNow,
-                        IsRead = false
-                    };
+                        var bookDetails = await bookService.GetBookByIdAsync(book.BookId);
+                        if (bookDetails == null)
+                            continue;
 
-                    await notificationService.AddNotificationAsync(notification);
+                        var notification = new NotificationDto
+                        {
+                            NotificationId = Guid.NewGuid(),
+                            UserId = bookDetails.BorrowedById,
+                            Message = $"Книга '{bookDetails.Title}' должна быть возвращена {book.BorrowedAt:dd.MM.yyyy}. Пожалуйста, верните её.",
+                            CreatedAt = DateTime.UtcNow,
+                            IsRead = false
+                        };
+
+                        await notificationService.AddNotificationAsync(notification);
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Ошибка при отправке уведомлений о просроченных книгах");
-            }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Ошибка при отправке уведомлений о просроченных книгах");
+                }
 
-            await Task.Delay(_interval, stoppingToken);
+                await Task.Delay(_interval, stoppingToken);
+            }
+        }
+
+        /// <summary>
+        /// Очистка ресурсов.
+        /// </summary>
+        private void Dispose()
+        {
+            Dispose();
+            GC.SuppressFinalize(this);
         }
     }
-
-    private void Dispose()
-    {
-        Dispose();
-        GC.SuppressFinalize(this);
-    }
-}

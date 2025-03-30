@@ -3,8 +3,15 @@ using WebLibrary.Domain.Entities;
 
 namespace WebLibrary.Persistance;
 
+/// <summary>
+/// Контекст базы данных приложения, включая все сущности.
+/// </summary>
 public class ApplicationDbContext : DbContext
 {
+    /// <summary>
+    /// Конструктор контекста.
+    /// </summary>
+    /// <param name="options">Параметры контекста.</param>
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
     public DbSet<Author> Authors { get; set; }
@@ -13,39 +20,22 @@ public class ApplicationDbContext : DbContext
     public DbSet<Notification> Notifications { get; set; }
     public DbSet<RefreshToken> RefreshTokens { get; set; }
 
-    
+    /// <summary>
+    /// Конфигурирует сущности модели.
+    /// </summary>
+    /// <param name="modelBuilder">Строитель модели.</param>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
-        /*
-        // Настройка свойства CreatedAt для сущности Book
         modelBuilder.Entity<Book>()
-            .Property(b => b.BorrowedAt)
-            .HasConversion(
-                v => v.ToUniversalTime(),
-                v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
-        
-        modelBuilder.Entity<Book>()
-            .Property(b => b.ReturnBy)
-            .HasConversion(
-                v => v.ToUniversalTime(),
-                v => DateTime.SpecifyKind(v, DateTimeKind.Utc)); */
+            .HasOne(b => b.BorrowedBy)
+            .WithMany(u => u.BorrowedBooks) 
+            .HasForeignKey(b => b.BorrowedById) 
+            .OnDelete(DeleteBehavior.SetNull);
 
-        // Настройка отношения между Book и User
-        modelBuilder.Entity<Book>()
-            .HasOne(b => b.BorrowedBy) // Связь с пользователем
-            .WithMany(u => u.BorrowedBooks) // У пользователя будет коллекция BorrowedBooksIds
-            .HasForeignKey(b => b.BorrowedById) // Внешний ключ на BorrowedById
-            .OnDelete(DeleteBehavior.SetNull); 
-
-        
         modelBuilder.Entity<Book>()
             .Property(b => b.ImageData)
-            .HasColumnType("bytea"); // Указываем PostgreSQL-тип
-        
-        
-
+            .HasColumnType("bytea"); 
     }
-
 }

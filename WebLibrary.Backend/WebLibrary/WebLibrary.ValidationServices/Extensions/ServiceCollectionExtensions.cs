@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using WebLibrary.Application.Dtos;
 using WebLibrary.Application.Interfaces.ValidationInterfaces;
 using WebLibrary.Application.Requests;
+using WebLibrary.BackgroundService.ClamAV;
 using WebLibrary.ValidationServices.Services;
 using WebLibrary.ValidationServices.ValidateRules;
 
@@ -26,6 +27,6 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IValidator<LoginRequest>, LoginRequestValidator>();
         services.AddScoped<IValidator<BookDto>, BookValidator>();
 
-        //services.AddScoped<ScanFileForMalwareHelper>(); - добавить потом clamAV
+        services.AddScoped<ScanFileForMalwareHelper>(); 
     }
 }

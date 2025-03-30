@@ -1,10 +1,33 @@
-﻿namespace WebLibrary.Domain.Entities;
-
-public class RefreshToken
+﻿namespace WebLibrary.Domain.Entities
 {
-    public Guid RefreshTokenId { get; set; } // Уникальный идентификатор
-    public Guid UserId { get; set; } // Пользователь, которому принадлежит токен
-   public string Token { get; set; } // Сам токен
-    public DateTime Expires { get; set; } // Дата истечения срока действия
-    public bool IsRevoked { get; set; } // Флаг отзыва токена
+    /// <summary>
+    /// Представляет токен обновления для пользователя.
+    /// </summary>
+    public class RefreshToken
+    {
+        /// <summary>
+        /// Уникальный идентификатор токена обновления.
+        /// </summary>
+        public Guid RefreshTokenId { get; set; }
+
+        /// <summary>
+        /// Идентификатор пользователя, которому принадлежит токен.
+        /// </summary>
+        public Guid UserId { get; set; }
+
+        /// <summary>
+        /// Сам токен обновления.
+        /// </summary>
+        public string Token { get; set; }
+
+        /// <summary>
+        /// Дата истечения срока действия токена.
+        /// </summary>
+        public DateTime Expires { get; set; }
+
+        /// <summary>
+        /// Флаг, указывающий, был ли токен отозван.
+        /// </summary>
+        public bool IsRevoked { get; set; }
+    }
 }

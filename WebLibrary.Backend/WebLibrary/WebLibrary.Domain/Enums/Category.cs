@@ -23,5 +23,10 @@ public enum Category
     /// <summary>
     /// Категория для различных отраслей.
     /// </summary>
-    Industries = 3
+    Industries = 3,
+    
+    /// <summary>
+    /// Категория для различных отраслей.
+    /// </summary>
+    Drammas = 4 
 }

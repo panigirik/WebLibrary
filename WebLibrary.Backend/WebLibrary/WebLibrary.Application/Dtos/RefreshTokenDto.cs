@@ -2,11 +2,33 @@
 
 namespace WebLibrary.Application.Dtos;
 
+/// <summary>
+/// DTO (Data Transfer Object) для представления обновляемого токена (refresh token).
+/// </summary>
 public class RefreshTokenDto
 {
-    public Guid RefreshTokenId { get; set; } // Уникальный идентификатор
-    public Guid UserId { get; set; } // Пользователь, которому принадлежит токен
-    public string Token { get; set; } // Сам токен
-    public DateTime Expires { get; set; } // Дата истечения срока действия
-    public bool IsRevoked { get; set; } // Флаг отзыва токена
+    /// <summary>
+    /// Уникальный идентификатор обновляемого токена.
+    /// </summary>
+    public Guid RefreshTokenId { get; set; }
+
+    /// <summary>
+    /// Идентификатор пользователя, которому принадлежит токен.
+    /// </summary>
+    public Guid UserId { get; set; }
+
+    /// <summary>
+    /// Сам обновляемый токен.
+    /// </summary>
+    public string Token { get; set; }
+
+    /// <summary>
+    /// Дата истечения срока действия токена.
+    /// </summary>
+    public DateTime Expires { get; set; }
+
+    /// <summary>
+    /// Флаг, указывающий, был ли токен отозван.
+    /// </summary>
+    public bool IsRevoked { get; set; }
 }

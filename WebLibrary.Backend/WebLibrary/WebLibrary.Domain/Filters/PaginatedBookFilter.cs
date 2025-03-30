@@ -22,5 +22,5 @@ public class PaginatedBookFilter
         /// <summary>
         /// Категория книги.
         /// </summary>
-        public Category PostCategory { get; set; } = Category.All;
+        public Category BookCategory { get; set; } = Category.All;
 }
