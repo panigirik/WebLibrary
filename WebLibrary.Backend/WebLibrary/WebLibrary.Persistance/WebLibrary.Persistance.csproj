@@ -16,6 +16,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\WebLibrary.BackgroundService\WebLibrary.BackgroundService.csproj" />
       <ProjectReference Include="..\WebLibrary.Domain\WebLibrary.Domain.csproj" />
     </ItemGroup>
 

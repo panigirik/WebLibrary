@@ -11,6 +11,5 @@ public class UserDto
     public string PasswordHash { get; set; }
     public Roles RoleType { get; set; } = Roles.AdminRole;
     
-    [NotMapped]
-    public List<Guid> BorrowedBooksIds { get; set; } = new(); 
+    public List<BookDto> BorrowedBooksIds { get; set; } = new(); 
 }

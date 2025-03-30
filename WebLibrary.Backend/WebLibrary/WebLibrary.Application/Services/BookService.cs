@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Caching.Distributed;
 using WebLibrary.Application.Dtos;
 using WebLibrary.Application.Interfaces;
+using WebLibrary.Application.Interfaces.ValidationInterfaces;
 using WebLibrary.Domain.Interfaces;
 using WebLibrary.Domain.Entities;
 using WebLibrary.Domain.Filters;
@@ -11,18 +12,16 @@ namespace WebLibrary.Application.Services;
 public class BookService : IBookService
 {
     private readonly IBookRepository _bookRepository;
-    private readonly IAuthorRepository _authorRepository;
     private readonly IMapper _mapper;
     private readonly IDistributedCache _cache;
-
+   
+    
     public BookService(IBookRepository bookRepository,
-        IAuthorRepository authorRepository,
         IMapper mapper)
     {
         _bookRepository = bookRepository;
-        _authorRepository = authorRepository;
         _mapper = mapper;
-    }
+      }
 
     public async Task<IEnumerable<GetBookRequestDto>> GetAllBooksAsync()
     {
@@ -82,37 +81,17 @@ public class BookService : IBookService
     }
 
     
-    public async Task<byte[]?> GetBookImageAsync(Guid bookId) // вынести в отдельный сервис
+    public async Task<byte[]?> GetBookImageAsync(Guid bookId)
     {
-        // Проверяем кэш
-        var cachedImage = await _cache.GetAsync($"book_image_{bookId}");
-        if (cachedImage != null)
-        {
-            return cachedImage; // Если изображение найдено в кэше, возвращаем его
-        }
-
-        // Если в кэше нет, достаем из БД и кэшируем
         var book = await _bookRepository.GetByIdAsync(bookId);
         if (book?.ImageData != null)
         {
-            await _cache.SetAsync(
-                $"book_image_{bookId}",
-                book.ImageData,
-                new DistributedCacheEntryOptions
-                {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1)
-                });
-
             return book.ImageData;
         }
 
         return null;
     }
-    
-    public async Task RemoveBookFromCache(Guid bookId) //вынести в отдельный сервис
-    {
-        await _cache.RemoveAsync($"book_image_{bookId}");
-    }
+
 
     public async Task UpdateBookAsync(BookDto bookDto)
     {
@@ -134,7 +113,7 @@ public class BookService : IBookService
         book.IsAvailable = false;
         book.BorrowedById = userId;
         book.BorrowedAt = DateTime.UtcNow;
-        book.ReturnBy = DateTime.UtcNow.AddDays(14); // Даем 2 недели на возврат
+        book.ReturnBy = DateTime.UtcNow.AddDays(14);
 
         await _bookRepository.UpdateAsync(book);
         return true;

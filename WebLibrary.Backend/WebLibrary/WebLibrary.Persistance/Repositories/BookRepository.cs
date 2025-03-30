@@ -1,4 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
+using WebLibrary.BackgroundService.Redis;
 using WebLibrary.Domain.Entities;
 using WebLibrary.Domain.Enums;
 using WebLibrary.Domain.Filters;
@@ -9,7 +12,9 @@ namespace WebLibrary.Persistance.Repositories;
 public class BookRepository : IBookRepository
 {
     private readonly ApplicationDbContext _context;
-
+    private readonly RedisCacheService _redisCacheService;
+    private readonly IMapper _mapper;
+   
     public BookRepository(ApplicationDbContext context)
     {
         _context = context;
@@ -69,14 +74,38 @@ public class BookRepository : IBookRepository
 
     public async Task AddAsync(Book book)
     {
+        book.BookId = Guid.NewGuid();
+
         await _context.Books.AddAsync(book);
         await _context.SaveChangesAsync();
+
+        var cacheOptions = new DistributedCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1)
+        };
+        //await _redisCacheService.SetAsync($"book_{book.BookId}", book, cacheOptions);
     }
 
-    public async Task UpdateAsync(Book book)
+    public async Task UpdateAsync(Book updatedBook)
     {
+        var book = await _context.Books.FirstOrDefaultAsync(b => b.BookId == updatedBook.BookId);
+        if (book == null) return;
+        
+        book.Title = updatedBook.Title;
+        book.AuthorId = updatedBook.AuthorId;
+        book.Genre = updatedBook.Genre;
+        book.ISBN = updatedBook.ISBN;
+        book.BorrowedAt = updatedBook.BorrowedAt;
+        book.IsAvailable = updatedBook.IsAvailable;
+        
         _context.Books.Update(book);
         await _context.SaveChangesAsync();
+
+        var cacheOptions = new DistributedCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1)
+        };
+        await _redisCacheService.SetAsync($"book_{book.BookId}", book, cacheOptions);
     }
 
     public async Task DeleteAsync(Guid id)
@@ -104,5 +133,10 @@ public class BookRepository : IBookRepository
             .ToListAsync();
     }
 
+    public async Task RemoveBookFromCache(Guid bookId)
+    {
+        string cacheKey = $"book_{bookId}";
+        await _redisCacheService.RemoveAsync(cacheKey);
+    }
     
 }

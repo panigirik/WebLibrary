@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
+using WebLibrary.BackgroundService.ClamAV;
 using WebLibrary.BackgroundService.Redis;
 using WebLibrary.BackgroundService.Services;
 
@@ -13,8 +14,13 @@ public static class ServiceCollectionExtensions
     {
         services.AddHostedService<OverdueBookNotificationService>();
         
-        services.AddSingleton<RedisConnectionExtension>(); 
+        services.AddScoped<RedisCacheService>();
+        
+        services.AddDistributedMemoryCache();
 
+        services.AddScoped<ScanFileForMalwareHelper>();
+        
+        services.AddSingleton<RedisConnectionExtension>(); 
         services.AddSingleton<IConnectionMultiplexer>(sp =>
         {
             var redisConnectionExtension = sp.GetRequiredService<RedisConnectionExtension>();

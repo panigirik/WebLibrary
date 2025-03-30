@@ -81,9 +81,11 @@
       <ProjectReference Include="..\WebLibrary.BackgroundService\WebLibrary.BackgroundService.csproj" />
       <ProjectReference Include="..\WebLibrary.Indentity\WebLibrary.Indentity.csproj" />
       <ProjectReference Include="..\WebLibrary.Persistance\WebLibrary.Persistance.csproj" />
+      <ProjectReference Include="..\WebLibrary.ValidationServices\WebLibrary.ValidationServices.csproj" />
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="BCrypt.Net-Next" Version="4.0.0" />
       <PackageReference Include="Swashbuckle.AspNetCore" Version="7.3.0" />
       <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="7.3.0" />
     </ItemGroup>

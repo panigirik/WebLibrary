@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.DependencyInjection;
 using WebLibrary.Application.Dtos;
 using WebLibrary.Application.Interfaces;
 using WebLibrary.Application.Mappings;
@@ -23,11 +24,13 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IAuthorService, AuthorService>();
         services.AddScoped<INotificationService, NotificationService>();
         services.AddScoped<IRefreshTokenService, RefreshTokenService>();
-        
+
         services.AddAutoMapper(typeof(UserMappingProfile));
         services.AddAutoMapper(typeof(AuthorMappingProfile));
         services.AddAutoMapper(typeof(BookMappingProfile));
         services.AddAutoMapper(typeof(NotificationMappingProfile));
         services.AddAutoMapper(typeof(RefreshTokenMappingProfile));
+
+        services.AddSingleton<JwtTokenService>();
     }
 }

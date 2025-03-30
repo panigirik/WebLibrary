@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using WebLibrary.Domain.Enums;
 
 namespace WebLibrary.Domain.Entities;
 
@@ -8,8 +9,7 @@ public class User
     public string UserName { get; set; } // Логин пользователя
     public string Email { get; set; } // Почта пользователя
     public string PasswordHash { get; set; } // Хеш пароля
-    public string Role { get; set; } // Роль (User, Admin)
+    public Roles Role { get; set; } // Роль (User, Admin)
     
-    [NotMapped]
-    public List<Guid> BorrowedBooksIds { get; set; } = new(); // Взятые книги
+    public List<Book> BorrowedBooks { get; set; } = new(); // Взятые книги
 }

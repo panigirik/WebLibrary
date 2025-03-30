@@ -34,15 +34,17 @@ public class ApplicationDbContext : DbContext
 
         // Настройка отношения между Book и User
         modelBuilder.Entity<Book>()
-            .HasOne(b => b.BorrowedBy)
-            .WithMany() // Убираем связь с коллекцией
-            .HasForeignKey(b => b.BorrowedById)
-            .OnDelete(DeleteBehavior.SetNull);
+            .HasOne(b => b.BorrowedBy) // Связь с пользователем
+            .WithMany(u => u.BorrowedBooks) // У пользователя будет коллекция BorrowedBooksIds
+            .HasForeignKey(b => b.BorrowedById) // Внешний ключ на BorrowedById
+            .OnDelete(DeleteBehavior.SetNull); 
 
         
         modelBuilder.Entity<Book>()
             .Property(b => b.ImageData)
             .HasColumnType("bytea"); // Указываем PostgreSQL-тип
+        
+        
 
     }
 

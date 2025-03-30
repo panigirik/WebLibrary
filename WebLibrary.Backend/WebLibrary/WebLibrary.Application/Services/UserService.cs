@@ -38,6 +38,7 @@ public class UserService : IUserService
     public async Task AddUserAsync(UserDto userDto)
     {
         var user = _mapper.Map<User>(userDto);
+        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(userDto.PasswordHash, workFactor: 12);
         await _userRepository.AddAsync(user);
     }
 

@@ -9,13 +9,11 @@ namespace WebLibrary.BackgroundService.Redis;
 
         public RedisConnectionExtension(IConfiguration configuration)
         {
-            // Получаем строку подключения к Redis из конфигурации
             _connectionString = configuration.GetConnectionString("RedisConnection");
         }
 
         public IConnectionMultiplexer Connect()
         {
-            // Подключение к Redis
             return ConnectionMultiplexer.Connect(_connectionString);
         }
     }

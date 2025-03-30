@@ -27,5 +27,5 @@ public interface IBookService
 
     Task<byte[]?> GetBookImageAsync(Guid bookId);
 
-    Task RemoveBookFromCache(Guid bookId);
+
 }

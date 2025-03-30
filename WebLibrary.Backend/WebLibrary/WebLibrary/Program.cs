@@ -2,6 +2,8 @@ using WebLibrary.Application.Extensions;
 using WebLibrary.BackgroundService.Extensions;
 using WebLibrary.Indentity.Extensions;
 using WebLibrary.Persistance.Extensions;
+using WebLibrary.Policies;
+using WebLibrary.ValidationServices.Extensions;
 
 public class Program
 {
@@ -10,6 +12,8 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         builder.Services.AddAppDbContext(builder.Configuration);
+        builder.Services.AddCoreApplicationValidationServices();
+        builder.Services.AddCustomPolicies();
         builder.Services.AddInfrastructureIdentityServices(builder.Configuration);
         
         builder.Services.AddAuthorization();

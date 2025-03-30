@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using WebLibrary.Application.Dtos;
 using WebLibrary.Application.Interfaces;
+using WebLibrary.Application.Interfaces.ValidationInterfaces;
 using WebLibrary.Domain.Filters;
 
 namespace WebLibrary.Controllers;
@@ -12,11 +13,13 @@ namespace WebLibrary.Controllers;
     {
         private readonly IBookService _bookService;
         private readonly IMapper _mapper;
-
-        public BooksController(IBookService bookService, IMapper mapper)
+        private readonly IBookValidationService _bookValidationService;
+        
+        public BooksController(IBookService bookService, IMapper mapper,IBookValidationService bookValidationService)
         {
             _bookService = bookService;
             _mapper = mapper;
+            _bookValidationService = bookValidationService;
         }
 
         // GET: api/books
@@ -75,8 +78,12 @@ namespace WebLibrary.Controllers;
         {
             if (bookDto.ImageFile != null)
             {
-                using var memoryStream = new MemoryStream();
-                await bookDto.ImageFile.CopyToAsync(memoryStream);
+                await _bookValidationService.ValidateBookAsync(bookDto, bookDto.ImageFile);
+                if (bookDto.ImageFile != null)
+                {
+                    using var memoryStream = new MemoryStream();
+                    await bookDto.ImageFile.CopyToAsync(memoryStream);
+                }
             }
 
             await _bookService.AddBookAsync(bookDto);
@@ -132,11 +139,5 @@ namespace WebLibrary.Controllers;
             return NoContent();
         }
         
-        [HttpDelete("image/{id}")]
-        public async Task<IActionResult> RemoveBookImage(Guid id)
-        {
-            await _bookService.RemoveBookFromCache(id);
-            return NoContent();
-        }
     }
 

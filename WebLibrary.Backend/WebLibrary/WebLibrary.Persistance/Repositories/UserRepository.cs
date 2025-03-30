@@ -16,9 +16,11 @@ public class UserRepository : IUserRepository
     public async Task<User> GetByIdAsync(Guid id)
     {
         return await _context.Users
-            .Include(u => u.BorrowedBooksIds)
-            .FirstOrDefaultAsync(u => u.UserId == id);
+            .Include(u => u.BorrowedBooks) // Загрузить все книги, которые были взяты пользователем
+            .FirstOrDefaultAsync(u => u.UserId == id); // Ищем пользователя по ID
     }
+
+
 
     public async Task<IEnumerable<User>> GetAllAsync()
     {
