@@ -1,3 +1,4 @@
+using WebLibrary.Application.ExceptionsHandling;
 using WebLibrary.Application.Extensions;
 using WebLibrary.BackgroundService.Extensions;
 using WebLibrary.Indentity.Extensions;
@@ -41,9 +42,9 @@ public class Program
             app.UseExceptionHandler("/Error");
             app.UseHsts();
         }
-
+        
         app.UseStaticFiles();
-
+        app.UseMiddleware<ExceptionHandlerMiddleware>();
         app.UseRouting();
         
         // Применение политики CORS

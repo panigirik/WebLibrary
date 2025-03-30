@@ -6,7 +6,9 @@ using SixLabors.ImageSharp;
 using WebLibrary.Application.Dtos;
 using WebLibrary.Application.Interfaces.ValidationInterfaces;
 using WebLibrary.BackgroundService.ClamAV;
+using WebLibrary.Domain.Exceptions;
 using WebLibrary.ValidationServices.ValidateRules;
+using ValidationException = FluentValidation.ValidationException;
 
 namespace WebLibrary.ValidationServices.Services;
 
@@ -64,7 +66,7 @@ public class BookValidationService : IBookValidationService
         }
         if (!_allowedFormats.Contains(extension))
         {
-            throw new ValidationException($"Not allowed format {extension}");
+            throw new ForbiddenException($"Not allowed format {extension}");
         }
     }
 

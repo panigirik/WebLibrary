@@ -20,10 +20,12 @@ public class JwtTokenService
 
     public string GenerateAccessToken(Guid userId, Roles role)
     {
+        Console.WriteLine($"Generating token for user {userId} with role {role}");
+
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
-            new Claim(ClaimTypes.Role, role.ToString()), // Исправлено
+            new Claim(ClaimTypes.Role, role.ToString()), // Важно: роль должна быть строкой "AdminRole"
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 
@@ -39,6 +41,7 @@ public class JwtTokenService
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
+
 
 
     public RefreshToken GenerateRefreshToken(Guid userId)

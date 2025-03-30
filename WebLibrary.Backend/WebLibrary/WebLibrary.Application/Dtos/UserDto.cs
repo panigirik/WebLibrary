@@ -9,7 +9,7 @@ public class UserDto
     public string UserName { get; set; } = "SampleUsername";
     public string Email { get; set; } = "samaplemail@gmail.com";
     public string PasswordHash { get; set; }
-    public Roles RoleType { get; set; } = Roles.AdminRole;
+    public Roles RoleType { get; set; } = Roles.Admin;
     
     public List<BookDto> BorrowedBooksIds { get; set; } = new(); 
 }

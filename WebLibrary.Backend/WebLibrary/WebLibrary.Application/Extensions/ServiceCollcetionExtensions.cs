@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using WebLibrary.Application.Dtos;
+using WebLibrary.Application.ExceptionsHandling;
 using WebLibrary.Application.Interfaces;
 using WebLibrary.Application.Mappings;
 using WebLibrary.Application.Services;

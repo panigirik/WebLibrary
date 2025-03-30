@@ -90,16 +90,20 @@ public class BookRepository : IBookRepository
     {
         var book = await _context.Books.FirstOrDefaultAsync(b => b.BookId == updatedBook.BookId);
         if (book == null) return;
-        
+    
         book.Title = updatedBook.Title;
         book.AuthorId = updatedBook.AuthorId;
         book.Genre = updatedBook.Genre;
         book.ISBN = updatedBook.ISBN;
         book.BorrowedAt = updatedBook.BorrowedAt;
+        book.ReturnBy = updatedBook.ReturnBy;
+        book.BorrowedById = updatedBook.BorrowedById;
         book.IsAvailable = updatedBook.IsAvailable;
-        
-        _context.Books.Update(book);
+
+        _context.Entry(book).State = EntityState.Modified; // Явное отслеживание изменений
         await _context.SaveChangesAsync();
+
+        await _redisCacheService.RemoveAsync($"book_{book.BookId}"); // Очистка кеша
 
         var cacheOptions = new DistributedCacheEntryOptions
         {
@@ -107,6 +111,7 @@ public class BookRepository : IBookRepository
         };
         await _redisCacheService.SetAsync($"book_{book.BookId}", book, cacheOptions);
     }
+
 
     public async Task DeleteAsync(Guid id)
     {
