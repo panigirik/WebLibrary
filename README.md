@@ -8,10 +8,7 @@ Docker (optional, for running services like PostgreSQL, Redis, and ClamAV in con
 1: Clone the Repository
 First, clone the project repository to your local machine.
 
-bash
-Копировать
-Редактировать
-git clone <repository-url>
+sitory-url>
 cd <project-directory>
 
 2: Configure the Database and Redis
