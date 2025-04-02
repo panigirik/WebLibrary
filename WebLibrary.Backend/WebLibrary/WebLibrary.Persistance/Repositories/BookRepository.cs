@@ -106,10 +106,13 @@ public class BookRepository : IBookRepository
             .ToListAsync();
     }
 
-    public Task<IEnumerable<Book>> GetOverdueBooksAsync()
+    public async Task<IEnumerable<Book>> GetOverdueBooksAsync()
     {
-        throw new NotImplementedException();
+        return await _context.Books
+            .Where(b => b.ReturnBy.HasValue && b.ReturnBy.Value < DateTime.UtcNow && !b.IsAvailable)
+            .ToListAsync();
     }
+
 
     /// <summary>
     /// Отсортировать книги по заданному критерию.
