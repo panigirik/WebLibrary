@@ -1,0 +1,22 @@
+# This is a generated file. Not intended for manual editing.
+version: "3.8"
+services:
+  weblibrary:
+    build:
+      context: "D:\\WebLibrary\\WebLibrary.Backend\\WebLibrary"
+      dockerfile: "WebLibrary/Dockerfile"
+      target: "base"
+    command: []
+    entrypoint:
+    - "dotnet"
+    - "/app/bin/Debug/net8.0/WebLibrary.dll"
+    environment:
+      ASPNETCORE_STATICWEBASSETS: "/app/bin/Debug/net8.0/WebLibrary.staticwebassets.runtime.CT.json"
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+    image: "weblibrary:dev"
+    ports: []
+    volumes:
+    - "C:\\Users\\Admin\\AppData\\Roaming\\NuGet\\V:/home/app/.nuget/packages"
+    - "D:\\WebLibrary\\WebLibrary.Backend\\WebLibrary\\WebLibrary:/app:rw"
+    - "D:\\WebLibrary\\WebLibrary.Backend\\WebLibrary:/src:rw"
+    working_dir: "/app"

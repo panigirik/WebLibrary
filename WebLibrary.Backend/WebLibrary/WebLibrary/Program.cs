@@ -12,6 +12,8 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
+        builder.WebHost.UseUrls("http://+:5228");
+
         builder.Services.AddAppDbContext(builder.Configuration);
         builder.Services.AddCoreApplicationValidationServices();
         builder.Services.AddCustomPolicies();
@@ -36,30 +38,33 @@ public class Program
         });
 
         var app = builder.Build();
-        
+
         if (!app.Environment.IsDevelopment())
         {
             app.UseExceptionHandler("/Error");
             app.UseHsts();
         }
-        
+
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI();
+        }
+
+        app.UseHttpsRedirection();
         app.UseStaticFiles();
         app.UseMiddleware<ExceptionHandlerMiddleware>();
         app.UseRouting();
         
-        // Применение политики CORS
         app.UseCors("AllowAllOrigins");
         app.MapControllers();
         app.UseAuthorization();
 
-        // Включение Swagger UI (только в режиме разработки)
-        if (app.Environment.IsDevelopment())
-        {
-            app.UseSwagger(); // Включение Swagger
-            app.UseSwaggerUI(); // Включение Swagger UI (интерфейс для тестирования API)
-        }
+        // Ensure Swagger is always enabled
+        app.UseSwagger();
+        app.UseSwaggerUI();
 
-        // Запуск приложения
         app.Run();
     }
 }
+

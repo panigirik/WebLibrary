@@ -1,0 +1,42 @@
+﻿version: '3.8'
+
+services:
+  weblibrary:
+    image: weblibrary
+    build:
+      context: .
+      dockerfile: WebLibrary/Dockerfile
+    ports:
+      - "5228:5228"  # Открытие порта для приложения
+    depends_on:
+      - redis
+      - clamav
+    environment:
+      - ConnectionStrings__Redis=redis:6379
+      - ConnectionStrings__Postgres=Host=host.docker.internal;Port=5432;Database=Library;Username=postgres;Password=Volvos80
+      - ConnectionStrings__ClamAV=http://clamav:3310/
+      - ASPNETCORE_ENVIRONMENT=Development  
+    networks:
+      - weblibrary_network
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - weblibrary_network
+
+  clamav:
+    image: mkodockx/docker-clamav
+    container_name: clamav
+    restart: always
+    ports:
+      - "3310:3310"
+    networks:
+      - weblibrary_network
+
+networks:
+  weblibrary_network:
+    driver: bridge
