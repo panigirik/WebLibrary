@@ -1,7 +1,9 @@
 
 Additionally, make sure you have the following installed:
 
-.NET SDK (version 6 or higher)
+.NET SDK (version 6 or higher) 
+
+SWAGGER: http://localhost:5228/swagger
 
 Docker (optional, for running services like PostgreSQL, Redis, and ClamAV in containers)
 
