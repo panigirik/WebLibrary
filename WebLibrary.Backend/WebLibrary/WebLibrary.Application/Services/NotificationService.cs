@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using WebLibrary.Application.Dtos;
+using WebLibrary.Application.Exceptions;
 using WebLibrary.Application.Interfaces;
 using WebLibrary.Domain.Entities;
 using WebLibrary.Domain.Interfaces;
@@ -43,6 +44,10 @@ public class NotificationService : INotificationService
     public async Task<NotificationDto?> GetNotificationByIdAsync(Guid id)
     {
         var notification = await _notificationRepository.GetByIdAsync(id);
+        if (notification == null)
+        {
+            throw new NotFoundException("notification not found");
+        }
         return _mapper.Map<NotificationDto?>(notification);
     }
 

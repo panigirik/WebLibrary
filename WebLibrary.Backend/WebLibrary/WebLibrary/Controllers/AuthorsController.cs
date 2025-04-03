@@ -2,7 +2,7 @@
 using WebLibrary.Application.Dtos;
 using WebLibrary.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using WebLibrary.Domain.Exceptions;
+using WebLibrary.Application.Exceptions;
 
 namespace WebLibrary.Controllers;
 

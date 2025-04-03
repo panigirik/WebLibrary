@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using WebLibrary.Application.Dtos;
 using WebLibrary.Application.Interfaces;
 
@@ -14,17 +13,15 @@ namespace WebLibrary.Controllers;
     public class NotificationsController : ControllerBase
     {
         private readonly INotificationService _notificationService;
-        private readonly IMapper _mapper;
-
+        
         /// <summary>
         /// Инициализирует новый экземпляр <see cref="NotificationsController"/>.
         /// </summary>
         /// <param name="notificationService">Сервис для работы с уведомлениями.</param>
         /// <param name="mapper">Маппер для преобразования данных.</param>
-        public NotificationsController(INotificationService notificationService, IMapper mapper)
+        public NotificationsController(INotificationService notificationService)
         {
             _notificationService = notificationService;
-            _mapper = mapper;
         }
 
         /// <summary>
@@ -47,10 +44,6 @@ namespace WebLibrary.Controllers;
         public async Task<ActionResult<NotificationDto>> GetNotificationById(Guid id)
         {
             var notification = await _notificationService.GetNotificationByIdAsync(id);
-            if (notification == null)
-            {
-                return NotFound();
-            }
             return Ok(notification);
         }
 

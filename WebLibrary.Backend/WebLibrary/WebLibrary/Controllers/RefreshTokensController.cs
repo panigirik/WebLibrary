@@ -3,8 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using WebLibrary.Application.Dtos;
 using WebLibrary.Application.Interfaces;
 
-
-
 namespace WebLibrary.Controllers;
 
     /// <summary>
@@ -16,12 +14,10 @@ namespace WebLibrary.Controllers;
     public class RefreshTokensController : ControllerBase
     {
         private readonly IRefreshTokenService _refreshTokenService;
-        private readonly IMapper _mapper;
-
-        public RefreshTokensController(IRefreshTokenService refreshTokenService, IMapper mapper)
+        
+        public RefreshTokensController(IRefreshTokenService refreshTokenService)
         {
             _refreshTokenService = refreshTokenService;
-            _mapper = mapper;
         }
 
         /// <summary>
@@ -45,10 +41,6 @@ namespace WebLibrary.Controllers;
         public async Task<ActionResult<RefreshTokenDto>> GetRefreshTokenById(Guid id)
         {
             var token = await _refreshTokenService.GetRefreshTokenByIdAsync(id);
-            if (token == null)
-            {
-                return NotFound();
-            }
             return Ok(token);
         }
 
@@ -61,10 +53,6 @@ namespace WebLibrary.Controllers;
         public async Task<ActionResult<RefreshTokenDto>> GetRefreshTokenByUserId(Guid userId)
         {
             var token = await _refreshTokenService.GetRefreshTokenByUserIdAsync(userId);
-            if (token == null)
-            {
-                return NotFound();
-            }
             return Ok(token);
         }
 

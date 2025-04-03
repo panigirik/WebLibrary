@@ -35,5 +35,7 @@ public static class ServiceCollectionExtension
         services.AddScoped<IBookRepository, BookRepository>();
         services.AddScoped<INotificationRepository, NotificationRepository>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+
+        services.AddScoped<IJwtTokenService, JwtTokenService>();
     }
 }

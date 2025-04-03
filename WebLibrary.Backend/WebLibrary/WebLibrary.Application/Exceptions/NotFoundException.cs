@@ -1,4 +1,4 @@
-﻿namespace WebLibrary.Domain.Exceptions
+﻿namespace WebLibrary.Application.Exceptions
 {
     /// <summary>
     /// Исключение, возникающее при отсутствии ресурса (404).

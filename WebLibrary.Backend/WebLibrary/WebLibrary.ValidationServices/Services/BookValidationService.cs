@@ -4,9 +4,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using SixLabors.ImageSharp;
 using WebLibrary.Application.Dtos;
+using WebLibrary.Application.Exceptions;
 using WebLibrary.Application.Interfaces.ValidationInterfaces;
+using WebLibrary.Application.Requests;
 using WebLibrary.BackgroundService.ClamAV;
-using WebLibrary.Domain.Exceptions;
 using WebLibrary.ValidationServices.ValidateRules;
 using ValidationException = FluentValidation.ValidationException;
 
@@ -18,7 +19,7 @@ namespace WebLibrary.ValidationServices.Services;
     public class BookValidationService : IBookValidationService
     {
         private readonly ScanFileForMalwareHelper _scanFileForMalwareHelper;
-        private readonly IValidator<BookDto> _bookValidator;
+        private readonly IValidator<AddBookRequest> _bookValidator;
         private readonly int _maxFileSizeMb;
         private readonly int _maxResolution;
         private readonly string[] _allowedFormats;
@@ -45,9 +46,9 @@ namespace WebLibrary.ValidationServices.Services;
         /// <param name="bookDto">DTO книги.</param>
         /// <param name="file">Файл, прикрепленный к книге.</param>
         /// <returns>Результат валидации.</returns>
-        public async Task<ValidationResult> ValidateBookAsync(BookDto bookDto, IFormFile file)
+        public async Task<ValidationResult> ValidateBookAsync(AddBookRequest bookRequest, IFormFile file)
         {
-            var validationResult = await _bookValidator.ValidateAsync(bookDto);
+            var validationResult = await _bookValidator.ValidateAsync(bookRequest);
             if (!validationResult.IsValid)
             {
                 return validationResult;

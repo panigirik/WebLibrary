@@ -6,7 +6,7 @@ namespace WebLibrary.Indentity.Extensions;
 public static class AddSwaggerAuthenticationExtension
 {
     /// <summary>
-    /// Метод для добавления конфигурации Swagger для аутентификации с использованием JWT.
+    /// Extension-метод для добавления конфигурации Swagger для аутентификации с использованием JWT.
     /// </summary>
     /// <param name="services">Коллекция сервисов для DI.</param>
     public static void AddSwaggerAuthentication(this IServiceCollection services)

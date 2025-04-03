@@ -10,7 +10,7 @@ namespace WebLibrary.Indentity.Extensions;
     public static class AddAuthentificationExtension
     {
         /// <summary>
-        /// Метод для добавления инфраструктурных сервисов аутентификации с использованием JWT.
+        /// Extension-метод для добавления инфраструктурных сервисов аутентификации с использованием JWT.
         /// </summary>
         /// <param name="services">Коллекция сервисов для DI.</param>
         /// <param name="configuration">Конфигурация приложения.</param>
@@ -22,7 +22,7 @@ namespace WebLibrary.Indentity.Extensions;
                     options.RequireHttpsMetadata = false;
                 options.SaveToken = true;
                     options.UseSecurityTokenValidators = true;
-                    options.SaveToken = false;  // Сохраняем токен в контексте аутентификацииf
+                    options.SaveToken = false; 
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = false,

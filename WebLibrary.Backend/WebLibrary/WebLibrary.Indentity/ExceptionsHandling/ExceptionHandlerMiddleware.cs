@@ -2,7 +2,7 @@
 using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using WebLibrary.Domain.Exceptions;
+using WebLibrary.Application.Exceptions;
 
 namespace WebLibrary.Application.ExceptionsHandling;
 

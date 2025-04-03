@@ -1,7 +1,11 @@
 ﻿using AutoMapper;
+using FluentValidation;
 using Microsoft.Extensions.Caching.Distributed;
 using WebLibrary.Application.Dtos;
+using WebLibrary.Application.Exceptions;
 using WebLibrary.Application.Interfaces;
+using WebLibrary.Application.Interfaces.ValidationInterfaces;
+using WebLibrary.Application.Requests;
 using WebLibrary.Domain.Entities;
 using WebLibrary.Domain.Filters;
 using WebLibrary.Domain.Interfaces;
@@ -16,6 +20,8 @@ namespace WebLibrary.Application.Services;
         private readonly IBookRepository _bookRepository;
         private readonly IMapper _mapper;
         private readonly IDistributedCache _cache;
+        private readonly IBookValidationService _bookValidationService;
+        private readonly IImageService _imageService;
 
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="BookService"/>.
@@ -23,10 +29,12 @@ namespace WebLibrary.Application.Services;
         /// <param name="bookRepository">Репозиторий для работы с книгами.</param>
         /// <param name="mapper">Интерфейс для отображения данных между сущностями и DTO.</param>
         public BookService(IBookRepository bookRepository,
-            IMapper mapper)
+            IMapper mapper,
+            IBookValidationService bookValidationService)
         {
             _bookRepository = bookRepository;
             _mapper = mapper;
+            _bookValidationService = bookValidationService;
         }
 
         /// <summary>
@@ -69,6 +77,10 @@ namespace WebLibrary.Application.Services;
         public async Task<GetBookRequestDto?> GetBookByIsbnAsync(string isbn)
         {
             var book = await _bookRepository.GetByIsbnAsync(isbn);
+            if (book == null)
+            {
+                throw new NotFoundException("Book not found.");
+            }
             return _mapper.Map<GetBookRequestDto?>(book);
         }
 
@@ -86,32 +98,28 @@ namespace WebLibrary.Application.Services;
         /// <summary>
         /// Добавляет новую книгу.
         /// </summary>
-        /// <param name="bookDto">DTO с данными книги.</param>
-        public async Task AddBookAsync(BookDto bookDto)
+        /// <param name="bookRequest">Запрос с данными книги.</param>
+        public async Task AddBookAsync(AddBookRequest bookRequest)
         {
-            var book = new Book
+            var existingBook = await _bookRepository.GetByIsbnAsync(bookRequest.ISBN);
+            if (existingBook != null)
             {
-                BookId = Guid.NewGuid(),
-                ISBN = bookDto.ISBN,
-                Title = bookDto.Title,
-                Genre = bookDto.Genre,
-                Description = bookDto.Description,
-                AuthorId = bookDto.AuthorId,
-                BorrowedAt = bookDto.BorrowedAt,
-                ReturnBy = bookDto.ReturnBy,
-                BorrowedById = bookDto.BorrowedById,
-                IsAvailable = bookDto.IsAvailable
-            };
-
-            if (bookDto.ImageFile != null)
-            {
-                using var memoryStream = new MemoryStream();
-                await bookDto.ImageFile.CopyToAsync(memoryStream);
-                book.ImageData = memoryStream.ToArray();
+                throw new ValidationException("book with this ISBN already exists.");
             }
 
+            var book = _mapper.Map<Book>(bookRequest);
+            book.BookId = Guid.NewGuid();
+
+            if (bookRequest.ImageFile != null)
+            {
+                book.ImageData = await _imageService.ProcessAndStoreImageAsync(bookRequest.ImageFile);
+            }
+
+            await _bookValidationService.ValidateBookAsync(bookRequest, bookRequest.ImageFile);
             await _bookRepository.AddAsync(book);
         }
+
+
 
         /// <summary>
         /// Получает изображение книги.
@@ -120,13 +128,13 @@ namespace WebLibrary.Application.Services;
         /// <returns>Массив байтов изображения книги или null, если изображение не найдено.</returns>
         public async Task<byte[]?> GetBookImageAsync(Guid bookId)
         {
-            var book = await _bookRepository.GetByIdAsync(bookId);
-            if (book?.ImageData != null)
+            var imageData = await _imageService.GetImageAsync(bookId);
+            if (imageData == null)
             {
-                return book.ImageData;
+                throw new NotFoundException("Book image not found.");
             }
-
-            return null;
+            
+            return imageData;
         }
 
         /// <summary>
@@ -135,6 +143,11 @@ namespace WebLibrary.Application.Services;
         /// <param name="bookDto">DTO с обновленными данными книги.</param>
         public async Task UpdateBookAsync(BookDto bookDto)
         {
+            var existingBook = await _bookRepository.GetByIdAsync(bookDto.BookId);
+            if (existingBook == null)
+            {
+                throw new ValidationException("book with this id not found");
+            }
             var book = _mapper.Map<Book>(bookDto);
             await _bookRepository.UpdateAsync(book);
         }
@@ -142,10 +155,15 @@ namespace WebLibrary.Application.Services;
         /// <summary>
         /// Удаляет книгу по уникальному идентификатору.
         /// </summary>
-        /// <param name="id">Уникальный идентификатор книги.</param>
-        public async Task DeleteBookAsync(Guid id)
+        /// <param name="bookId">Уникальный идентификатор книги.</param>
+        public async Task DeleteBookAsync(Guid bookId)
         {
-            await _bookRepository.DeleteAsync(id);
+            var existingBook = await _bookRepository.GetByIdAsync(bookId);
+            if (existingBook == null)
+            {
+                throw new ValidationException("book with this id not found");
+            }
+            await _bookRepository.DeleteAsync(bookId);
         }
 
         /// <summary>
@@ -158,8 +176,14 @@ namespace WebLibrary.Application.Services;
         {
             var book = await _bookRepository.GetByIdAsync(bookId);
             if (book == null || !book.IsAvailable)
-                return false;
-
+            {
+                throw new NotFoundException("book not found");
+            }
+            var existingBook = await _bookRepository.GetByIdAsync(bookId);    
+            if (existingBook == null)
+            {
+                throw new ValidationException("book with this id not found");
+            }
             book.IsAvailable = false;
             book.BorrowedById = userId;
             book.BorrowedAt = DateTime.UtcNow;
@@ -180,7 +204,11 @@ namespace WebLibrary.Application.Services;
             var book = await _bookRepository.GetByIdAsync(bookId);
             if (book == null || book.BorrowedById != userId)
                 return false;
-
+            var existingBook = await _bookRepository.GetByIdAsync(bookId);
+            if (existingBook == null)
+            {
+                throw new ValidationException("book with this id not found");
+            }
             book.IsAvailable = true;
             book.BorrowedById = null;
             book.BorrowedAt = null;

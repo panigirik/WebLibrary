@@ -20,15 +20,16 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IBookService, BookService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IAuthorService, AuthorService>();
+        services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<INotificationService, NotificationService>();
         services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+        services.AddScoped<IImageService, ImageService>();
 
         services.AddAutoMapper(typeof(UserMappingProfile));
         services.AddAutoMapper(typeof(AuthorMappingProfile));
         services.AddAutoMapper(typeof(BookMappingProfile));
         services.AddAutoMapper(typeof(NotificationMappingProfile));
         services.AddAutoMapper(typeof(RefreshTokenMappingProfile));
-
-        services.AddSingleton<JwtTokenService>();
+        
     }
 }

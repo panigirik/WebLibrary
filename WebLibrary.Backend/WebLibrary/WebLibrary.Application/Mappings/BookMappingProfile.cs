@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using WebLibrary.Application.Dtos;
+using WebLibrary.Application.Requests;
 using WebLibrary.Domain.Entities;
 
 namespace WebLibrary.Application.Mappings;
@@ -15,5 +16,7 @@ public class BookMappingProfile: Profile
         CreateMap<Book, BookDto>();
         CreateMap<GetBookRequestDto, Book>();
         CreateMap<Book, GetBookRequestDto>();
+        CreateMap<Book, AddBookRequest>();
+        CreateMap<AddBookRequest, Book>();
     }
 }

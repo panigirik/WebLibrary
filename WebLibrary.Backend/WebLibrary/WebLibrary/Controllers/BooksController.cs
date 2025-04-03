@@ -1,10 +1,9 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebLibrary.Application.Dtos;
+using WebLibrary.Application.Exceptions;
 using WebLibrary.Application.Interfaces;
-using WebLibrary.Application.Interfaces.ValidationInterfaces;
-using WebLibrary.Domain.Exceptions;
+using WebLibrary.Application.Requests;
 using WebLibrary.Domain.Filters;
 
 namespace WebLibrary.Controllers;
@@ -17,18 +16,16 @@ namespace WebLibrary.Controllers;
 public class BooksController : ControllerBase
 {
     private readonly IBookService _bookService;
-    private readonly IBookValidationService _bookValidationService;
     
     /// <summary>
     /// Инициализирует новый экземпляр <see cref="BooksController"/>.
     /// </summary>
     /// <param name="bookService">Сервис для работы с книгами.</param>
     /// <param name="bookValidationService">Сервис для валидации данных книг.</param>
-    public BooksController(IBookService bookService, IBookValidationService bookValidationService)
+    public BooksController(IBookService bookService)
     {
         _bookService = bookService;
-        _bookValidationService = bookValidationService;
-    }
+        }
 
     /// <summary>
     /// Получает список всех книг.
@@ -67,10 +64,6 @@ public class BooksController : ControllerBase
     public async Task<ActionResult<GetBookRequestDto>> GetBookByIsbn(string isbn)
     {
         var book = await _bookService.GetBookByIsbnAsync(isbn);
-        if (book == null)
-        {
-            throw new NotFoundException("Book not found.");
-        }
         return Ok(book);
     }
 
@@ -101,22 +94,12 @@ public class BooksController : ControllerBase
     /// <summary>
     /// Добавляет новую книгу.
     /// </summary>
-    /// <param name="bookDto">Данные книги для добавления.</param>
+    /// <param name="bookRequest">Данные книги для добавления.</param>
     /// <returns>Статус выполнения операции.</returns>
     [HttpPost] [Authorize(Policy = "AdminOnly")]
-    public async Task<IActionResult> AddBook([FromForm] BookDto bookDto)
+    public async Task<IActionResult> AddBook([FromForm] AddBookRequest bookRequest)
     {
-        if (bookDto.ImageFile != null)
-        {
-            await _bookValidationService.ValidateBookAsync(bookDto, bookDto.ImageFile);
-            if (bookDto.ImageFile != null)
-            {
-                using var memoryStream = new MemoryStream();
-                await bookDto.ImageFile.CopyToAsync(memoryStream);
-            }
-        }
-
-        await _bookService.AddBookAsync(bookDto);
+        await _bookService.AddBookAsync(bookRequest);
         return Ok();
     }
 
@@ -129,11 +112,6 @@ public class BooksController : ControllerBase
     public async Task<IActionResult> GetBookImage(Guid id)
     {
         var imageData = await _bookService.GetBookImageAsync(id);
-        if (imageData == null)
-        {
-            throw new NotFoundException("Book image not found.");
-        }
-
         return File(imageData, "image/jpeg");
     }
 

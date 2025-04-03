@@ -1,4 +1,5 @@
 ﻿using WebLibrary.Application.Dtos;
+using WebLibrary.Application.Requests;
 
 namespace WebLibrary.Application.Interfaces;
 
@@ -30,7 +31,7 @@ public interface IUserService
     /// <summary>
     /// Обновляет данные пользователя.
     /// </summary>
-    Task UpdateUserAsync(UserDto user);
+    Task UpdateUserAsync(UpdateUserInfoRequest updateUserInfoRequest);
 
     /// <summary>
     /// Удаляет пользователя по его идентификатору.

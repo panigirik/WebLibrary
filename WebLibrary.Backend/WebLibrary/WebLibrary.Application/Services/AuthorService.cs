@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using WebLibrary.Application.Dtos;
+using WebLibrary.Application.Exceptions;
 using WebLibrary.Application.Interfaces;
 using WebLibrary.Domain.Entities;
 using WebLibrary.Domain.Interfaces;
@@ -68,6 +69,11 @@ namespace WebLibrary.Application.Services;
         public async Task UpdateAuthorAsync(AuthorDto authorDto)
         {
             var author = _mapper.Map<Author>(authorDto);
+            var existingAuthor = await _authorRepository.GetByIdAsync(authorDto.AuthorId);
+            if (existingAuthor == null)
+            {
+                throw new NotFoundException("authir with this id not found");
+            }
             await _authorRepository.UpdateAsync(author);
         }
 
@@ -77,6 +83,11 @@ namespace WebLibrary.Application.Services;
         /// <param name="id">Уникальный идентификатор автора.</param>
         public async Task DeleteAuthorAsync(Guid id)
         {
+            var existingAuthor = await _authorRepository.GetByIdAsync(id);
+            if (existingAuthor == null)
+            {
+                throw new NotFoundException("authir with this id not found");
+            }
             await _authorRepository.DeleteAsync(id);
         }
 

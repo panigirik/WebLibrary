@@ -1,12 +1,13 @@
 ﻿using FluentValidation;
 using WebLibrary.Application.Dtos;
+using WebLibrary.Application.Requests;
 
 namespace WebLibrary.ValidationServices.ValidateRules
 {
     /// <summary>
     /// Валидатор для DTO книги.
     /// </summary>
-    public class BookValidator : AbstractValidator<BookDto>
+    public class BookValidator : AbstractValidator<AddBookRequest>
     {
         public BookValidator()
         {

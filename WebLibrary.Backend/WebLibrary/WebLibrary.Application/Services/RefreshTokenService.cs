@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using WebLibrary.Application.Dtos;
+using WebLibrary.Application.Exceptions;
 using WebLibrary.Application.Interfaces;
 using WebLibrary.Domain.Entities;
 using WebLibrary.Domain.Interfaces;
@@ -43,6 +44,10 @@ public class RefreshTokenService : IRefreshTokenService
     public async Task<RefreshTokenDto?> GetRefreshTokenByIdAsync(Guid id)
     {
         var token = await _refreshTokenRepository.GetByIdAsync(id);
+        if (token == null)
+        {
+            throw new NotFoundException("token not found");
+        }
         return _mapper.Map<RefreshTokenDto?>(token);
     }
 
@@ -54,6 +59,10 @@ public class RefreshTokenService : IRefreshTokenService
     public async Task<RefreshTokenDto?> GetRefreshTokenByUserIdAsync(Guid userId)
     {
         var token = await _refreshTokenRepository.GetByUserIdAsync(userId);
+        if (token == null)
+        {
+            throw new NotFoundException("token not found");
+        }
         return _mapper.Map<RefreshTokenDto?>(token);
     }
 

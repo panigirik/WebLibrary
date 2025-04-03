@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using WebLibrary.Application.Dtos;
+using WebLibrary.Application.Requests;
 using WebLibrary.Domain.Entities;
 
 namespace WebLibrary.Application.Mappings;
@@ -13,5 +14,7 @@ public class UserMappingProfile: Profile
     {
         CreateMap<User, UserDto>();
         CreateMap<UserDto, User>();
+        CreateMap<UpdateUserInfoRequest, User>();
+        CreateMap<User, UpdateUserInfoRequest>();
     }
 }

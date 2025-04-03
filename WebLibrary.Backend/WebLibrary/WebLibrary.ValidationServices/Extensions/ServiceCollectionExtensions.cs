@@ -23,9 +23,12 @@ public static class ServiceCollectionExtensions
 
         services.AddScoped<IValidationService, ValidationService>();
         services.AddScoped<IBookValidationService, BookValidationService>();
+        services.AddScoped<IUserValidationService, UserValidationService>();
 
         services.AddScoped<IValidator<LoginRequest>, LoginRequestValidator>();
-        services.AddScoped<IValidator<BookDto>, BookValidator>();
+        services.AddScoped<IValidator<AddBookRequest>, BookValidator>();
+        services.AddScoped<IValidator<UpdateUserInfoRequest>, UserValidator>();
+        services.AddScoped<IValidator<UpdateUserInfoRequest>, UserValidator>();
 
         services.AddScoped<ScanFileForMalwareHelper>(); 
     }

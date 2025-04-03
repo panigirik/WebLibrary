@@ -4,41 +4,28 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using WebLibrary.Application.Interfaces;
 using WebLibrary.Domain.Entities;
 using WebLibrary.Domain.Enums;
+using WebLibrary.Domain.Interfaces;
 
-namespace WebLibrary.Application.Services;
+namespace WebLibrary.Persistance;
 
-/// <summary>
-/// Сервис для генерации JWT-токенов и Refresh-токенов.
-/// </summary>
-public class JwtTokenService
+public class JwtTokenService : IJwtTokenService
 {
     private readonly IConfiguration _configuration;
 
-    /// <summary>
-    /// Конструктор сервиса токенов.
-    /// </summary>
-    /// <param name="configuration">Конфигурация приложения.</param>
     public JwtTokenService(IConfiguration configuration)
     {
         _configuration = configuration;
     }
 
-    /// <summary>
-    /// Генерирует access-токен для указанного пользователя.
-    /// </summary>
-    /// <param name="userId">Идентификатор пользователя.</param>
-    /// <param name="role">Роль пользователя.</param>
-    /// <returns>Строка с JWT access-токеном.</returns>
     public string GenerateAccessToken(Guid userId, Roles role)
     {
-        Console.WriteLine($"Generating token for user {userId} with role {role}");
-
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
-            new Claim(ClaimTypes.Role, role.ToString()), // Важно: роль должна быть строкой "AdminRole"
+            new Claim(ClaimTypes.Role, role.ToString()), 
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 
@@ -55,11 +42,6 @@ public class JwtTokenService
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
-    /// <summary>
-    /// Генерирует refresh-токен для указанного пользователя.
-    /// </summary>
-    /// <param name="userId">Идентификатор пользователя.</param>
-    /// <returns>Объект RefreshToken.</returns>
     public RefreshToken GenerateRefreshToken(Guid userId)
     {
         using var rng = RandomNumberGenerator.Create();
@@ -70,7 +52,7 @@ public class JwtTokenService
             RefreshTokenId = Guid.NewGuid(),
             UserId = userId,
             Token = Convert.ToBase64String(randomBytes),
-            Expires = DateTime.UtcNow.AddDays(7), // Refresh токен на 7 дней
+            Expires = DateTime.UtcNow.AddDays(7), 
             IsRevoked = false
         };
     }

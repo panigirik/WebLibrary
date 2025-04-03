@@ -1,4 +1,5 @@
 ﻿using WebLibrary.Application.Dtos;
+using WebLibrary.Application.Requests;
 using WebLibrary.Domain.Filters;
 
 namespace WebLibrary.Application.Interfaces;
@@ -36,7 +37,7 @@ public interface IBookService
     /// <summary>
     /// Добавляет новую книгу.
     /// </summary>
-    Task AddBookAsync(BookDto bookDto);
+    Task AddBookAsync(AddBookRequest bookRequest);
 
     /// <summary>
     /// Обновляет информацию о книге.

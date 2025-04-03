@@ -1,6 +1,7 @@
 ﻿using FluentValidation.Results;
 using Microsoft.AspNetCore.Http;
 using WebLibrary.Application.Dtos;
+using WebLibrary.Application.Requests;
 
 namespace WebLibrary.Application.Interfaces.ValidationInterfaces;
 
@@ -15,5 +16,5 @@ public interface IBookValidationService
     /// <param name="bookDto">Объект с данными книги.</param>
     /// <param name="file">Файл изображения книги.</param>
     /// <returns>Результат валидации.</returns>
-    Task<ValidationResult> ValidateBookAsync(BookDto bookDto, IFormFile file);
+    Task<ValidationResult> ValidateBookAsync(AddBookRequest bookDto, IFormFile file);
 }

@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using WebLibrary.Application.Dtos;
+using WebLibrary.Application.Exceptions;
 using WebLibrary.Application.Interfaces;
-using WebLibrary.Domain.Exceptions;
+using WebLibrary.Application.Requests;
 
 namespace WebLibrary.Controllers;
 
@@ -44,10 +45,6 @@ public class UsersController : ControllerBase
     public async Task<ActionResult<UserDto>> GetUserById(Guid id)
     {
         var user = await _userService.GetUserByIdAsync(id);
-        if (user == null)
-        {
-            throw new NotFoundException("User not found.");
-        }
         return Ok(user);
     }
 
@@ -60,10 +57,6 @@ public class UsersController : ControllerBase
     public async Task<ActionResult<UserDto>> GetUserByEmail(string email)
     {
         var user = await _userService.GetUserByEmailAsync(email);
-        if (user == null)
-        {
-            throw new NotFoundException("User not found.");
-        }
         return Ok(user);
     }
 
@@ -85,14 +78,9 @@ public class UsersController : ControllerBase
     /// <param name="userDto">Данные для редактирования пользователя.</param>
     /// <returns>NoContent().</returns>
     [HttpPut("{id}")]
-    public async Task<ActionResult> UpdateUser(Guid id, [FromBody] UserDto userDto)
+    public async Task<ActionResult> UpdateUser([FromBody] UpdateUserInfoRequest updateUserInfoRequest)
     {
-        if (id != userDto.UserId)
-        {
-            throw new BadRequestException("ID mismatch.");
-        }
-
-        await _userService.UpdateUserAsync(userDto);
+        await _userService.UpdateUserAsync(updateUserInfoRequest);
         return NoContent();
     }
 
