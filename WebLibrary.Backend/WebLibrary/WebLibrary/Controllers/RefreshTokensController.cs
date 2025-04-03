@@ -1,23 +1,38 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using WebLibrary.Application.Dtos;
-using WebLibrary.Application.Interfaces;
+using WebLibrary.Application.Interfaces.UseCaseIntefaces.RefreshTokenInterfaces;
 
-namespace WebLibrary.Controllers;
-
+namespace WebLibrary.Controllers
+{
     /// <summary>
     /// Контроллер для управления refresh-токенами.
-    /// <remarks>Контроллер для наглядности.</remarks>>
-    ///</summary>
+    /// <remarks>Контроллер для наглядности.</remarks>
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class RefreshTokensController : ControllerBase
     {
-        private readonly IRefreshTokenService _refreshTokenService;
-        
-        public RefreshTokensController(IRefreshTokenService refreshTokenService)
+        private readonly IGetAllRefreshTokensUseCase _getAllRefreshTokensUseCase;
+        private readonly IGetRefreshTokenByIdUseCase _getRefreshTokenByIdUseCase;
+        private readonly IGetRefreshTokenByUserIdUseCase _getRefreshTokenByUserIdUseCase;
+        private readonly IAddRefreshTokenUseCase _addRefreshTokenUseCase;
+        private readonly IRevokeRefreshTokenUseCase _revokeRefreshTokenUseCase;
+        private readonly IDeleteRefreshTokenUseCase _deleteRefreshTokenUseCase;
+
+        public RefreshTokensController(
+            IGetAllRefreshTokensUseCase getAllRefreshTokensUseCase,
+            IGetRefreshTokenByIdUseCase getRefreshTokenByIdUseCase,
+            IGetRefreshTokenByUserIdUseCase getRefreshTokenByUserIdUseCase,
+            IAddRefreshTokenUseCase addRefreshTokenUseCase,
+            IRevokeRefreshTokenUseCase revokeRefreshTokenUseCase,
+            IDeleteRefreshTokenUseCase deleteRefreshTokenUseCase)
         {
-            _refreshTokenService = refreshTokenService;
+            _getAllRefreshTokensUseCase = getAllRefreshTokensUseCase;
+            _getRefreshTokenByIdUseCase = getRefreshTokenByIdUseCase;
+            _getRefreshTokenByUserIdUseCase = getRefreshTokenByUserIdUseCase;
+            _addRefreshTokenUseCase = addRefreshTokenUseCase;
+            _revokeRefreshTokenUseCase = revokeRefreshTokenUseCase;
+            _deleteRefreshTokenUseCase = deleteRefreshTokenUseCase;
         }
 
         /// <summary>
@@ -28,7 +43,7 @@ namespace WebLibrary.Controllers;
         [HttpGet]
         public async Task<ActionResult<IEnumerable<RefreshTokenDto>>> GetAllRefreshTokens()
         {
-            var tokens = await _refreshTokenService.GetAllRefreshTokensAsync();
+            var tokens = await _getAllRefreshTokensUseCase.ExecuteAsync();
             return Ok(tokens);
         }
 
@@ -40,7 +55,7 @@ namespace WebLibrary.Controllers;
         [HttpGet("{id}")]
         public async Task<ActionResult<RefreshTokenDto>> GetRefreshTokenById(Guid id)
         {
-            var token = await _refreshTokenService.GetRefreshTokenByIdAsync(id);
+            var token = await _getRefreshTokenByIdUseCase.ExecuteAsync(id);
             return Ok(token);
         }
 
@@ -52,7 +67,7 @@ namespace WebLibrary.Controllers;
         [HttpGet("user/{userId}")]
         public async Task<ActionResult<RefreshTokenDto>> GetRefreshTokenByUserId(Guid userId)
         {
-            var token = await _refreshTokenService.GetRefreshTokenByUserIdAsync(userId);
+            var token = await _getRefreshTokenByUserIdUseCase.ExecuteAsync(userId);
             return Ok(token);
         }
 
@@ -64,7 +79,7 @@ namespace WebLibrary.Controllers;
         [HttpPost]
         public async Task<ActionResult> AddRefreshToken([FromBody] RefreshTokenDto refreshTokenDto)
         {
-            await _refreshTokenService.AddRefreshTokenAsync(refreshTokenDto);
+            await _addRefreshTokenUseCase.ExecuteAsync(refreshTokenDto);
             return CreatedAtAction(nameof(GetRefreshTokenById), new { id = refreshTokenDto.RefreshTokenId }, refreshTokenDto);
         }
 
@@ -76,7 +91,7 @@ namespace WebLibrary.Controllers;
         [HttpPut("{id}/revoke")]
         public async Task<ActionResult> RevokeRefreshToken(Guid id)
         {
-            await _refreshTokenService.RevokeRefreshTokenAsync(id);
+            await _revokeRefreshTokenUseCase.ExecuteAsync(id);
             return NoContent();
         }
 
@@ -88,7 +103,8 @@ namespace WebLibrary.Controllers;
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteRefreshToken(Guid id)
         {
-            await _refreshTokenService.DeleteRefreshTokenAsync(id);
+            await _deleteRefreshTokenUseCase.ExecuteAsync(id);
             return NoContent();
         }
     }
+}

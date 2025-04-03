@@ -2,7 +2,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using WebLibrary.Application.Dtos;
-using WebLibrary.Application.Interfaces;
+using WebLibrary.Application.Interfaces.UseCaseIntefaces.BookInterfaces;
+using WebLibrary.Application.Interfaces.UseCaseIntefaces.NotificationInterfaces;
 using WebLibrary.Domain.Interfaces;
 
 namespace WebLibrary.BackgroundService.Services;
@@ -43,14 +44,15 @@ namespace WebLibrary.BackgroundService.Services;
                 {
                     using var scope = _scopeFactory.CreateScope();
                     var bookRepository = scope.ServiceProvider.GetRequiredService<IBookRepository>();
-                    var bookService = scope.ServiceProvider.GetRequiredService<IBookService>();
-                    var notificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
+                    var bookService = scope.ServiceProvider.GetRequiredService<IGetBookByIdUseCase>();
+                    var bookByIdCase = scope.ServiceProvider.GetRequiredService<IGetBookByIdUseCase>();
+                    var notificationUseCase = scope.ServiceProvider.GetRequiredService<IAddNotificationUseCase>();
 
                     var overdueBooks = await bookRepository.GetOverdueBooksAsync();
 
                     foreach (var book in overdueBooks)
                     {
-                        var bookDetails = await bookService.GetBookByIdAsync(book.BookId);
+                        var bookDetails = await bookService.ExecuteAsync(book.BookId);
                         if (bookDetails == null)
                             continue;
 
@@ -63,7 +65,7 @@ namespace WebLibrary.BackgroundService.Services;
                             IsRead = false
                         };
 
-                        await notificationService.AddNotificationAsync(notification);
+                        await notificationUseCase.ExecuteAsync(notification);
                     }
                 }
                 catch (Exception ex)

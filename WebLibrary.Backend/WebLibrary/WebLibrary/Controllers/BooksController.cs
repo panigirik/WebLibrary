@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using WebLibrary.Application.Dtos;
 using WebLibrary.Application.Exceptions;
 using WebLibrary.Application.Interfaces;
+using WebLibrary.Application.Interfaces.UseCaseIntefaces.BookInterfaces;
 using WebLibrary.Application.Requests;
+using WebLibrary.Application.UseCases;
 using WebLibrary.Domain.Filters;
 
 namespace WebLibrary.Controllers;
@@ -15,153 +17,154 @@ namespace WebLibrary.Controllers;
 [ApiController]
 public class BooksController : ControllerBase
 {
-    private readonly IBookService _bookService;
-    
+    private readonly IGetAllBooksUseCase _getAllBooksUseCase;
+    private readonly IGetBookByIdUseCase _getBookByIdUseCase;
+    private readonly IGetBookByIsbnUseCase _getBookByIsbnUseCase;
+    private readonly IGetPaginatedBooksUseCase _getPaginatedBooksUseCase;
+    private readonly IGetBooksByAuthorUseCase _getBooksByAuthorUseCase;
+    private readonly IAddBookUseCase _addBookUseCase;
+    private readonly IGetBookImageUseCase _getBookImageUseCase;
+    private readonly IBorrowBookUseCase _borrowBookUseCase;
+    private readonly IReturnBookUseCase _returnBookUseCase;
+    private readonly IUpdateBookUseCase _updateBookUseCase;
+    private readonly IDeleteBookUseCase _deleteBookUseCase;
+
     /// <summary>
     /// Инициализирует новый экземпляр <see cref="BooksController"/>.
     /// </summary>
-    /// <param name="bookService">Сервис для работы с книгами.</param>
-    /// <param name="bookValidationService">Сервис для валидации данных книг.</param>
-    public BooksController(IBookService bookService)
+    public BooksController(
+        IGetAllBooksUseCase getAllBooksUseCase,
+        IGetBookByIdUseCase getBookByIdUseCase,
+        IGetBookByIsbnUseCase getBookByIsbnUseCase,
+        IGetPaginatedBooksUseCase getPaginatedBooksUseCase,
+        IGetBooksByAuthorUseCase getBooksByAuthorUseCase,
+        IAddBookUseCase addBookUseCase,
+        IGetBookImageUseCase getBookImageUseCase,
+        IBorrowBookUseCase borrowBookUseCase,
+        IReturnBookUseCase returnBookUseCase,
+        IUpdateBookUseCase updateBookUseCase,
+        IDeleteBookUseCase deleteBookUseCase)
     {
-        _bookService = bookService;
-        }
+        _getAllBooksUseCase = getAllBooksUseCase;
+        _getBookByIdUseCase = getBookByIdUseCase;
+        _getBookByIsbnUseCase = getBookByIsbnUseCase;
+        _getPaginatedBooksUseCase = getPaginatedBooksUseCase;
+        _getBooksByAuthorUseCase = getBooksByAuthorUseCase;
+        _addBookUseCase = addBookUseCase;
+        _getBookImageUseCase = getBookImageUseCase;
+        _borrowBookUseCase = borrowBookUseCase;
+        _returnBookUseCase = returnBookUseCase;
+        _updateBookUseCase = updateBookUseCase;
+        _deleteBookUseCase = deleteBookUseCase;
+    }
 
     /// <summary>
     /// Получает список всех книг.
     /// </summary>
-    /// <returns>Список всех книг.</returns>
     [HttpGet]
     public async Task<ActionResult<IEnumerable<GetBookRequestDto>>> GetAllBooks()
     {
-        var books = await _bookService.GetAllBooksAsync();
+        var books = await _getAllBooksUseCase.ExecuteAsync();
         return Ok(books);
     }
 
     /// <summary>
     /// Получает книгу по её идентификатору.
     /// </summary>
-    /// <param name="id">Идентификатор книги.</param>
-    /// <returns>Книга с указанным идентификатором.</returns>
     [HttpGet("{id}")]
     public async Task<ActionResult<GetBookRequestDto>> GetBookById(Guid id)
     {
-        var book = await _bookService.GetBookByIdAsync(id);
-        if (book == null)
-        {
-            throw new NotFoundException("Book not found.");
-        }
-        
+        var book = await _getBookByIdUseCase.ExecuteAsync(id);
         return Ok(book);
     }
 
     /// <summary>
     /// Получает книгу по её ISBN.
     /// </summary>
-    /// <param name="isbn">ISBN книги.</param>
-    /// <returns>Книга с указанным ISBN.</returns>
     [HttpGet("isbn/{isbn}")]
     public async Task<ActionResult<GetBookRequestDto>> GetBookByIsbn(string isbn)
     {
-        var book = await _bookService.GetBookByIsbnAsync(isbn);
+        var book = await _getBookByIsbnUseCase.ExecuteAsync(isbn);
         return Ok(book);
     }
 
     /// <summary>
     /// Получает книги с пагинацией.
     /// </summary>
-    /// <param name="filter">Фильтр для пагинации.</param>
-    /// <returns>Список книг с пагинацией.</returns>
     [HttpGet("paginated")]
     public async Task<ActionResult<IEnumerable<GetBookRequestDto>>> GetPaginatedBooks([FromQuery] PaginatedBookFilter filter)
     {
-        var books = await _bookService.GetPaginatedBooksAsync(filter);
+        var books = await _getPaginatedBooksUseCase.ExecuteAsync(filter);
         return Ok(books);
     }
 
     /// <summary>
     /// Получает книги автора по идентификатору.
     /// </summary>
-    /// <param name="authorId">Идентификатор автора.</param>
-    /// <returns>Список книг автора.</returns>
     [HttpGet("author/{authorId}")]
     public async Task<ActionResult<IEnumerable<GetBookRequestDto>>> GetBooksByAuthor(Guid authorId)
     {
-        var books = await _bookService.GetBooksByAuthorAsync(authorId);
+        var books = await _getBooksByAuthorUseCase.ExecuteAsync(authorId);
         return Ok(books);
     }
 
     /// <summary>
     /// Добавляет новую книгу.
     /// </summary>
-    /// <param name="bookRequest">Данные книги для добавления.</param>
-    /// <returns>Статус выполнения операции.</returns>
     [HttpPost] [Authorize(Policy = "AdminOnly")]
     public async Task<IActionResult> AddBook([FromForm] AddBookRequest bookRequest)
     {
-        await _bookService.AddBookAsync(bookRequest);
+        await _addBookUseCase.ExecuteAsync(bookRequest);
         return Ok();
     }
 
     /// <summary>
     /// Получает изображение книги по её идентификатору.
     /// </summary>
-    /// <param name="id">Идентификатор книги.</param>
-    /// <returns>Изображение книги.</returns>
     [HttpGet("image/{id}")]
     public async Task<IActionResult> GetBookImage(Guid id)
     {
-        var imageData = await _bookService.GetBookImageAsync(id);
+        var imageData = await _getBookImageUseCase.ExecuteAsync(id);
         return File(imageData, "image/jpeg");
     }
 
     /// <summary>
     /// Оформляет книгу как заёмную для пользователя.
     /// </summary>
-    /// <param name="bookId">Идентификатор книги.</param>
-    /// <param name="userId">Идентификатор пользователя.</param>
-    /// <returns>Статус выполнения операции.</returns>
     [HttpPost("{bookId}/borrow")]
     public async Task<IActionResult> BorrowBook(Guid bookId, [FromQuery] Guid userId)
     {
-        await _bookService.BorrowBookAsync(bookId, userId);
+        await _borrowBookUseCase.ExecuteAsync(bookId, userId);
         return Ok("Book successfully borrowed.");
     }
 
     /// <summary>
     /// Возвращает книгу пользователем.
     /// </summary>
-    /// <param name="bookId">Идентификатор книги.</param>
-    /// <param name="userId">Идентификатор пользователя.</param>
-    /// <returns>Статус выполнения операции.</returns>
     [HttpPost("{bookId}/return")]
     public async Task<IActionResult> ReturnBook(Guid bookId, [FromQuery] Guid userId)
     {
-        await _bookService.ReturnBookAsync(bookId, userId);
+        await _returnBookUseCase.ExecuteAsync(bookId, userId);
         return Ok("Book successfully returned.");
     }
 
     /// <summary>
     /// Обновляет информацию о книге.
     /// </summary>
-    /// <param name="bookDto">Данные книги для обновления.</param>
-    /// <returns>Статус выполнения операции.</returns>
     [HttpPut] [Authorize(Policy = "AdminOnly")]
-    public async Task<ActionResult> UpdateBook([FromBody] BookDto bookDto)
+    public async Task<ActionResult> UpdateBook([FromBody] UpdateBookRequest updateBookRequest)
     {
-        await _bookService.UpdateBookAsync(bookDto);
+        await _updateBookUseCase.ExecuteAsync(updateBookRequest);
         return NoContent();
     }
 
     /// <summary>
     /// Удаляет книгу по её идентификатору.
     /// </summary>
-    /// <param name="id">Идентификатор книги.</param>
-    /// <returns>Статус выполнения операции.</returns>
     [HttpDelete("{id}")] [Authorize(Policy = "AdminOnly")]
     public async Task<ActionResult> DeleteBook(Guid id)
     {
-        await _bookService.DeleteBookAsync(id);
+        await _deleteBookUseCase.ExecuteAsync(id);
         return NoContent();
     }
 }

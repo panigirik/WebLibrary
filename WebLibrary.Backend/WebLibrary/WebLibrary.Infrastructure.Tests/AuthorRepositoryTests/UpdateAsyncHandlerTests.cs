@@ -4,8 +4,8 @@ using WebLibrary.Persistance;
 using WebLibrary.Persistance.Repositories;
 using Xunit;
 
-namespace WebLibrary.Infrastructure.Tests.AuthorRepositoryTests
-{
+namespace WebLibrary.Infrastructure.Tests.AuthorRepositoryTests;
+
     public class UpdateAsyncHandlerTests
     {
         private readonly ApplicationDbContext _context;
@@ -24,7 +24,6 @@ namespace WebLibrary.Infrastructure.Tests.AuthorRepositoryTests
         [Fact]
         public async Task UpdateAsync_AuthorExists_UpdatesAuthor()
         {
-            // Arrange
             var authorId = Guid.NewGuid();
             var author = new Author 
             { 
@@ -36,20 +35,17 @@ namespace WebLibrary.Infrastructure.Tests.AuthorRepositoryTests
 
             _context.Authors.Add(author);
             await _context.SaveChangesAsync();
-
-            // Modify author
+            
             author.FirstName = "Updated Name";
             author.Country = "Updated Country";
 
-            // Act
             await _repository.UpdateAsync(author);
             var updatedAuthor = await _context.Authors.FindAsync(authorId);
 
-            // Assert
             Assert.NotNull(updatedAuthor);
             Assert.Equal("Updated Name", updatedAuthor.FirstName);
             Assert.Equal("Updated Country", updatedAuthor.Country);
         }
 
     }
-}
+

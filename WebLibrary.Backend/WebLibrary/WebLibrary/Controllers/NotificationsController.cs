@@ -1,27 +1,47 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WebLibrary.Application.Dtos;
-using WebLibrary.Application.Interfaces;
+using WebLibrary.Application.Interfaces.UseCaseIntefaces.NotificationInterfaces;
 
-namespace WebLibrary.Controllers;
-
+namespace WebLibrary.Controllers
+{
     /// <summary>
     /// Контроллер для управления уведомлениями.
-    /// <remarks>Контроллер для наглядности.</remarks>>
+    /// <remarks>Контроллер для наглядности.</remarks>
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class NotificationsController : ControllerBase
     {
-        private readonly INotificationService _notificationService;
-        
+        private readonly IGetAllNotificationsUseCase _getAllNotificationsUseCase;
+        private readonly IGetNotificationByIdUseCase _getNotificationByIdUseCase;
+        private readonly IGetNotificationsByUserIdUseCase _getNotificationsByUserIdUseCase;
+        private readonly IAddNotificationUseCase _addNotificationUseCase;
+        private readonly IMarkNotificationAsReadUseCase _markNotificationAsReadUseCase;
+        private readonly IDeleteNotificationUseCase _deleteNotificationUseCase;
+
         /// <summary>
         /// Инициализирует новый экземпляр <see cref="NotificationsController"/>.
         /// </summary>
-        /// <param name="notificationService">Сервис для работы с уведомлениями.</param>
-        /// <param name="mapper">Маппер для преобразования данных.</param>
-        public NotificationsController(INotificationService notificationService)
+        /// <param name="getAllNotificationsUseCase">Use case для получения всех уведомлений.</param>
+        /// <param name="getNotificationByIdUseCase">Use case для получения уведомления по идентификатору.</param>
+        /// <param name="getNotificationsByUserIdUseCase">Use case для получения уведомлений пользователя.</param>
+        /// <param name="addNotificationUseCase">Use case для добавления нового уведомления.</param>
+        /// <param name="markNotificationAsReadUseCase">Use case для пометки уведомления как прочитанного.</param>
+        /// <param name="deleteNotificationUseCase">Use case для удаления уведомления.</param>
+        public NotificationsController(
+            IGetAllNotificationsUseCase getAllNotificationsUseCase,
+            IGetNotificationByIdUseCase getNotificationByIdUseCase,
+            IGetNotificationsByUserIdUseCase getNotificationsByUserIdUseCase,
+            IAddNotificationUseCase addNotificationUseCase,
+            IMarkNotificationAsReadUseCase markNotificationAsReadUseCase,
+            IDeleteNotificationUseCase deleteNotificationUseCase)
         {
-            _notificationService = notificationService;
+            _getAllNotificationsUseCase = getAllNotificationsUseCase;
+            _getNotificationByIdUseCase = getNotificationByIdUseCase;
+            _getNotificationsByUserIdUseCase = getNotificationsByUserIdUseCase;
+            _addNotificationUseCase = addNotificationUseCase;
+            _markNotificationAsReadUseCase = markNotificationAsReadUseCase;
+            _deleteNotificationUseCase = deleteNotificationUseCase;
         }
 
         /// <summary>
@@ -31,7 +51,7 @@ namespace WebLibrary.Controllers;
         [HttpGet]
         public async Task<ActionResult<IEnumerable<NotificationDto>>> GetAllNotifications()
         {
-            var notifications = await _notificationService.GetAllNotificationsAsync();
+            var notifications = await _getAllNotificationsUseCase.ExecuteAsync();
             return Ok(notifications);
         }
 
@@ -43,7 +63,7 @@ namespace WebLibrary.Controllers;
         [HttpGet("{id}")]
         public async Task<ActionResult<NotificationDto>> GetNotificationById(Guid id)
         {
-            var notification = await _notificationService.GetNotificationByIdAsync(id);
+            var notification = await _getNotificationByIdUseCase.ExecuteAsync(id);
             return Ok(notification);
         }
 
@@ -55,7 +75,7 @@ namespace WebLibrary.Controllers;
         [HttpGet("user/{userId}")]
         public async Task<ActionResult<IEnumerable<NotificationDto>>> GetNotificationsByUserId(Guid userId)
         {
-            var notifications = await _notificationService.GetNotificationsByUserIdAsync(userId);
+            var notifications = await _getNotificationsByUserIdUseCase.ExecuteAsync(userId);
             return Ok(notifications);
         }
 
@@ -67,7 +87,7 @@ namespace WebLibrary.Controllers;
         [HttpPost]
         public async Task<ActionResult> AddNotification([FromBody] NotificationDto notificationDto)
         {
-            await _notificationService.AddNotificationAsync(notificationDto);
+            await _addNotificationUseCase.ExecuteAsync(notificationDto);
             return CreatedAtAction(nameof(GetNotificationById), new { id = notificationDto.NotificationId }, notificationDto);
         }
 
@@ -79,7 +99,7 @@ namespace WebLibrary.Controllers;
         [HttpPut("{id}/markAsRead")]
         public async Task<ActionResult> MarkAsRead(Guid id)
         {
-            await _notificationService.MarkAsReadAsync(id);
+            await _markNotificationAsReadUseCase.ExecuteAsync(id);
             return NoContent();
         }
 
@@ -91,8 +111,8 @@ namespace WebLibrary.Controllers;
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteNotification(Guid id)
         {
-            await _notificationService.DeleteNotificationAsync(id);
+            await _deleteNotificationUseCase.ExecuteAsync(id);
             return NoContent();
         }
     }
-
+}

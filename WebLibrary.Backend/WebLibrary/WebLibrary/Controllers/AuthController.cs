@@ -1,33 +1,35 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity.Data;
-using WebLibrary.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using WebLibrary.Application.Interfaces.UseCaseIntefaces.AuthInterfaces;
 using WebLibrary.Application.Requests;
 using LoginRequest = WebLibrary.Application.Requests.LoginRequest;
 
 namespace WebLibrary.Controllers;
 
 /// <summary>
-/// Контроллер для аутентификации пользователей.
+/// Контроллер для аутентификации пользователей через use-cases.
 /// </summary>
 [Route("api/[controller]")]
 [ApiController]
 public class AuthController : ControllerBase
 {
-    private readonly IAuthService _authService;
-
+    private readonly ILoginUseCase _loginUseCase;
+    private readonly IRefreshTokenUseCase _refreshTokenUseCase;
+    private readonly ILogoutUseCase _logoutUseCase;
 
     /// <summary>
     /// Инициализирует новый экземпляр <see cref="AuthController"/>.
     /// </summary>
-    /// <param name="jwtTokenService">Сервис для работы с JWT токенами.</param>
-    /// <param name="refreshTokenService">Сервис для работы с refresh токенами.</param>
-    /// <param name="userService">Сервис для работы с пользователями.</param>
-    /// <param name="validationService">Сервис для валидации данных.</param>
-    public AuthController(IAuthService authService)
+    public AuthController(
+        ILoginUseCase loginUseCase,
+        IRefreshTokenUseCase refreshTokenUseCase,
+        ILogoutUseCase logoutUseCase)
     {
-        _authService = authService;
+        _loginUseCase = loginUseCase;
+        _refreshTokenUseCase = refreshTokenUseCase;
+        _logoutUseCase = logoutUseCase;
     }
 
     /// <summary>
@@ -36,11 +38,11 @@ public class AuthController : ControllerBase
     /// <param name="request">Запрос на вход с email и паролем.</param>
     /// <returns>Токен доступа и refresh токен.</returns>
     [HttpPost("login")]
-    public async Task<LoginResult> Login([FromBody] LoginRequest request)
+    public async Task<ActionResult<LoginResult>> Login([FromBody] LoginRequest request)
     {
-        return await _authService.LoginAsync(request);
+        var response = await _loginUseCase.ExecuteAsync(request);
+        return Ok(response);
     }
-
 
     /// <summary>
     /// Обновляет access токен с использованием refresh токена.
@@ -52,11 +54,9 @@ public class AuthController : ControllerBase
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         Guid.TryParse(userIdClaim, out var userId);
-        var newAccessToken = await _authService.RefreshTokenAsync(userId, request.RefreshToken);
+        var newAccessToken = await _refreshTokenUseCase.ExecuteAsync(userId, request.RefreshToken);
         return Ok(new { AccessToken = newAccessToken });
     }
-
-
 
     /// <summary>
     /// Выход из системы, отзывается refresh токен.
@@ -67,8 +67,8 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Logout()
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        Guid.TryParse(userIdClaim, out var UserId);
-        await _authService.LogoutAsync(UserId);
+        Guid.TryParse(userIdClaim, out var userId);
+        await _logoutUseCase.ExecuteAsync(userId);
         return NoContent();
     }
 }

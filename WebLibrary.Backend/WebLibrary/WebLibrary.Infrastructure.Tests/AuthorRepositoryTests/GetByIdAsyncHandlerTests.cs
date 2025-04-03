@@ -24,38 +24,33 @@ public class GetByIdAsyncHandlerTests
     [Fact]
     public async Task GetByIdAsync_AuthorExists_ReturnsAuthorWithBooks()
     {
-        // Arrange
         var authorId = Guid.NewGuid();
         var author = new Author 
         { 
             AuthorId = authorId, 
             FirstName = "Test Author", 
-            LastName = "TestLastName",  // <-- Добавлено
-            Country = "TestCountry"     // <-- Добавлено
+            LastName = "TestLastName", 
+            Country = "TestCountry"    
         };
     
         _context.Authors.Add(author);
         await _context.SaveChangesAsync();
-
-        // Act
+        
         var result = await _repository.GetByIdAsync(authorId);
-
-        // Assert
+        
         Assert.NotNull(result);
         Assert.Equal(authorId, result.AuthorId);
         Assert.Equal("Test Author", result.FirstName);
-        Assert.Equal("TestLastName", result.LastName);  // <-- Проверяем LastName
-        Assert.Equal("TestCountry", result.Country);    // <-- Проверяем Country
+        Assert.Equal("TestLastName", result.LastName);  
+        Assert.Equal("TestCountry", result.Country);   
     }
 
 
     [Fact]
     public async Task GetByIdAsync_AuthorDoesNotExist_ReturnsNull()
     {
-        // Act
         var result = await _repository.GetByIdAsync(Guid.NewGuid());
-
-        // Assert
+        
         Assert.Null(result);
     }
 }

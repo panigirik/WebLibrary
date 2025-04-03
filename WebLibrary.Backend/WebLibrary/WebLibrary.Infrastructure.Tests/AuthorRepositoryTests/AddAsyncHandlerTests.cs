@@ -24,7 +24,6 @@ public class AddAsyncHandlerTests
     [Fact]
     public async Task AddAsync_ValidAuthor_SavesToDatabase()
     {
-        // Arrange
         var author = new Author
         {
             AuthorId = Guid.NewGuid(),
@@ -33,12 +32,10 @@ public class AddAsyncHandlerTests
             Country = "USA",
             DateOfBirth = new DateTime(1980, 5, 20)
         };
-
-        // Act
+        
         await _repository.AddAsync(author);
         var result = await _context.Authors.FindAsync(author.AuthorId);
-
-        // Assert
+        
         Assert.NotNull(result);
         Assert.Equal(author.AuthorId, result.AuthorId);
         Assert.Equal("John", result.FirstName);

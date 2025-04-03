@@ -1,8 +1,6 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using WebLibrary.Application.Dtos;
-using WebLibrary.Application.Exceptions;
-using WebLibrary.Application.Interfaces;
+using WebLibrary.Application.Interfaces.UseCaseIntefaces.UserInterfaces;
 using WebLibrary.Application.Requests;
 
 namespace WebLibrary.Controllers;
@@ -14,16 +12,37 @@ namespace WebLibrary.Controllers;
 [ApiController]
 public class UsersController : ControllerBase
 {
-    private readonly IUserService _userService;
-   
+    private readonly IGetAllUsersUseCase _getAllUsersUseCase;
+    private readonly IGetUserByIdUseCase _getUserByIdUseCase;
+    private readonly IGetUserByEmailUseCase _getUserByEmailUseCase;
+    private readonly IAddUserUseCase _addUserUseCase;
+    private readonly IUpdateUserUseCase _updateUserUseCase;
+    private readonly IDeleteUserUseCase _deleteUserUseCase;
+
     /// <summary>
     /// Инициализирует новый экземпляр <see cref="UsersController"/>.
     /// </summary>
-    /// <param name="userService">Сервис для работы с пользователями.</param>
-    public UsersController(IUserService userService)
+    /// <param name="getAllUsersUseCase">Use case для получения всех пользователей.</param>
+    /// <param name="getUserByIdUseCase">Use case для получения пользователя по идентификатору.</param>
+    /// <param name="getUserByEmailUseCase">Use case для получения пользователя по email.</param>
+    /// <param name="addUserUseCase">Use case для добавления нового пользователя.</param>
+    /// <param name="updateUserUseCase">Use case для обновления информации о пользователе.</param>
+    /// <param name="deleteUserUseCase">Use case для удаления пользователя.</param>
+    public UsersController(
+        IGetAllUsersUseCase getAllUsersUseCase,
+        IGetUserByIdUseCase getUserByIdUseCase,
+        IGetUserByEmailUseCase getUserByEmailUseCase,
+        IAddUserUseCase addUserUseCase,
+        IUpdateUserUseCase updateUserUseCase,
+        IDeleteUserUseCase deleteUserUseCase)
     {
-        _userService = userService;
-        }
+        _getAllUsersUseCase = getAllUsersUseCase;
+        _getUserByIdUseCase = getUserByIdUseCase;
+        _getUserByEmailUseCase = getUserByEmailUseCase;
+        _addUserUseCase = addUserUseCase;
+        _updateUserUseCase = updateUserUseCase;
+        _deleteUserUseCase = deleteUserUseCase;
+    }
 
     /// <summary>
     /// Получить всех пользователей.
@@ -32,7 +51,7 @@ public class UsersController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<UserDto>>> GetAllUsers()
     {
-        var users = await _userService.GetAllUsersAsync();
+        var users = await _getAllUsersUseCase.ExecuteAsync();
         return Ok(users);
     }
 
@@ -44,8 +63,8 @@ public class UsersController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<UserDto>> GetUserById(Guid id)
     {
-        var user = await _userService.GetUserByIdAsync(id);
-        return Ok(user);
+        var user = await _getUserByIdUseCase.ExecuteAsync(id);
+        return user == null ? NotFound() : Ok(user);
     }
 
     /// <summary>
@@ -56,8 +75,8 @@ public class UsersController : ControllerBase
     [HttpGet("email/{email}")]
     public async Task<ActionResult<UserDto>> GetUserByEmail(string email)
     {
-        var user = await _userService.GetUserByEmailAsync(email);
-        return Ok(user);
+        var user = await _getUserByEmailUseCase.ExecuteAsync(email);
+        return user == null ? NotFound() : Ok(user);
     }
 
     /// <summary>
@@ -68,7 +87,7 @@ public class UsersController : ControllerBase
     [HttpPost]
     public async Task<ActionResult> AddUser([FromForm] UserDto userDto)
     {
-        await _userService.AddUserAsync(userDto);
+        await _addUserUseCase.ExecuteAsync(userDto);
         return CreatedAtAction(nameof(GetUserById), new { id = userDto.UserId }, userDto);
     }
 
@@ -80,7 +99,7 @@ public class UsersController : ControllerBase
     [HttpPut("{id}")]
     public async Task<ActionResult> UpdateUser([FromBody] UpdateUserInfoRequest updateUserInfoRequest)
     {
-        await _userService.UpdateUserAsync(updateUserInfoRequest);
+        await _updateUserUseCase.ExecuteAsync(updateUserInfoRequest);
         return NoContent();
     }
 
@@ -92,7 +111,7 @@ public class UsersController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<ActionResult> DeleteUser(Guid id)
     {
-        await _userService.DeleteUserAsync(id);
+        await _deleteUserUseCase.ExecuteAsync(id);
         return NoContent();
     }
 }

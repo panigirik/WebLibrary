@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using WebLibrary.Application.Dtos;
 using WebLibrary.Application.Requests;
 
 namespace WebLibrary.ValidationServices.ValidateRules
