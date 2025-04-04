@@ -1,10 +1,9 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
 using WebLibrary.Application.Interfaces.UseCases;
-using WebLibrary.Application.Interfaces.ValidationInterfaces;
 using WebLibrary.Application.Requests;
 
-namespace WebLibrary.ValidationServices.Services;
+namespace WebLibrary.ValidationServices.UseCases;
 
 /// <summary>
 /// Сервис для выполнения use-case обновления информации о пользователе с валидацией.

@@ -10,7 +10,7 @@ using WebLibrary.BackgroundService.ClamAV;
 using WebLibrary.ValidationServices.ValidateRules;
 using ValidationException = FluentValidation.ValidationException;
 
-namespace WebLibrary.ValidationServices.Services;
+namespace WebLibrary.ValidationServices.UseCases;
 
     /// <summary>
     /// Сервис для валидации книг.

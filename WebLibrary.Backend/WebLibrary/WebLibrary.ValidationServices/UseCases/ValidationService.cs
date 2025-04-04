@@ -3,7 +3,7 @@ using FluentValidation.Results;
 using WebLibrary.Application.Interfaces.ValidationInterfaces;
 using WebLibrary.Application.Requests;
 
-namespace WebLibrary.ValidationServices.Services;
+namespace WebLibrary.ValidationServices.UseCases;
 
 /// <summary>
 /// Сервис для выполнения use-case валидации запросов и пользователей.
