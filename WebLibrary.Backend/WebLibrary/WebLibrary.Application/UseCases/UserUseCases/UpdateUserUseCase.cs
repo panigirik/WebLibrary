@@ -15,7 +15,7 @@ namespace WebLibrary.Application.UseCases.UserUseCases;
     public class UpdateUserUseCase : IUpdateUserUseCase
     {
         private readonly IUserRepository _userRepository;
-        private readonly IUpdateUserInfoUseCase _updateUserInfoUseCase;
+        private readonly IValidator<UpdateUserInfoRequest> _updateUserValidator;
         private readonly IMapper _mapper;
 
         /// <summary>
@@ -24,10 +24,12 @@ namespace WebLibrary.Application.UseCases.UserUseCases;
         /// <param name="userRepository">Репозиторий для работы с пользователями.</param>
         /// <param name="updateUserInfoUseCase">Use-case для обновления информации о пользователе.</param>
         /// <param name="mapper">Объект для маппинга данных.</param>
-        public UpdateUserUseCase(IUserRepository userRepository, IUpdateUserInfoUseCase updateUserInfoUseCase, IMapper mapper)
+        public UpdateUserUseCase(IUserRepository userRepository, 
+            IValidator<UpdateUserInfoRequest> updateUserValidator,
+            IMapper mapper)
         {
             _userRepository = userRepository;
-            _updateUserInfoUseCase = updateUserInfoUseCase;
+            _updateUserValidator = updateUserValidator;
             _mapper = mapper;
         }
 
@@ -59,7 +61,7 @@ namespace WebLibrary.Application.UseCases.UserUseCases;
                 throw new ValidationException("User with this email already exists");
             }
             
-            await _updateUserInfoUseCase.ExecuteAsync(updateUserInfoRequest);
+            await _updateUserValidator.ValidateAsync(updateUserInfoRequest);
             await _userRepository.UpdateAsync(user);
         }
     }

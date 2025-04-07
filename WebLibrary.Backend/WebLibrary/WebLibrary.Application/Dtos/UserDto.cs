@@ -31,7 +31,7 @@ public class UserDto
     /// <summary>
     /// Роль пользователя в системе.
     /// </summary>
-    public Roles RoleType { get; set; } = Roles.Admin;
+    public Roles RoleType { get; set; } = Roles.admin;
 
     /// <summary>
     /// Список книг, взятых пользователем.

@@ -1,10 +1,8 @@
 ﻿using System.Net;
 using System.Text.Json;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 using WebLibrary.Application.Exceptions;
 
-namespace WebLibrary.Application.ExceptionsHandling;
+namespace WebLibrary.ExceptionsHandling;
 
 /// <summary>
 /// Класс обработки исключений.

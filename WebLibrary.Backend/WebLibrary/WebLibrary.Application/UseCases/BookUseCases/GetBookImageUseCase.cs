@@ -1,6 +1,6 @@
 ﻿using WebLibrary.Application.Exceptions;
+using WebLibrary.Application.Interfaces.ServiceInterfaces;
 using WebLibrary.Application.Interfaces.UseCaseIntefaces.BookInterfaces;
-using WebLibrary.Application.Interfaces.UseCaseIntefaces.ImageInterfaces;
 
 namespace WebLibrary.Application.UseCases.BookUseCases;
 
@@ -9,15 +9,15 @@ namespace WebLibrary.Application.UseCases.BookUseCases;
     /// </summary>
     public class GetBookImageUseCase : IGetBookImageUseCase
     {
-        private readonly IGetImageUseCase _getImageUseCase;
+        private readonly IImageService _imageService;
 
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="GetBookImageUseCase"/>.
         /// </summary>
         /// <param name="getImageUseCase">Сервис для получения изображения книги.</param>
-        public GetBookImageUseCase(IGetImageUseCase getImageUseCase)
+        public GetBookImageUseCase(IImageService imageService)
         {
-            _getImageUseCase = getImageUseCase;
+            _imageService = imageService;
         }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace WebLibrary.Application.UseCases.BookUseCases;
         /// <exception cref="NotFoundException">Если изображение книги не найдено.</exception>
         public async Task<byte[]?> ExecuteAsync(Guid bookId)
         {
-            var imageData = await _getImageUseCase.ExecuteAsync(bookId);
+            var imageData = await _imageService.GetImageAsync(bookId);
             if (imageData == null)
             {
                 throw new NotFoundException("Book image not found.");

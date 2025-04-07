@@ -1,10 +1,9 @@
-﻿using WebLibrary.Application.Dtos;
+﻿using AutoMapper;
 using WebLibrary.Application.Exceptions;
 using WebLibrary.Application.Interfaces.UseCaseIntefaces.AuthInterfaces;
-using WebLibrary.Application.Interfaces.UseCaseIntefaces.RefreshTokenInterfaces;
-using WebLibrary.Application.Interfaces.UseCaseIntefaces.UserInterfaces;
 using WebLibrary.Application.Interfaces.ValidationInterfaces;
 using WebLibrary.Application.Requests;
+using WebLibrary.Domain.Entities;
 using WebLibrary.Domain.Interfaces;
 
 namespace WebLibrary.Application.UseCases.AuthUseCases;
@@ -14,11 +13,11 @@ namespace WebLibrary.Application.UseCases.AuthUseCases;
     /// </summary>
     public class LoginUseCase : ILoginUseCase
     {
-        private readonly IGetUserByEmailUseCase _emailUseCase;
+        private readonly IUserRepository _userRepository;
+        private readonly IRefreshTokenRepository _refreshTokenRepository;
         private readonly IJwtTokenService _jwtTokenService;
-        private readonly IAddRefreshTokenUseCase _addRefreshToken;
-        private readonly IValidationUseCase _validationUseCase;
-
+        private readonly ILoginValidationService _validationUseCase;
+        private readonly IMapper _mapper;
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="LoginUseCase"/>.
         /// </summary>
@@ -26,15 +25,19 @@ namespace WebLibrary.Application.UseCases.AuthUseCases;
         /// <param name="validationUseCase">Сервис валидации данных запроса.</param>
         /// <param name="emailUseCase">Use-case для получения пользователя по email.</param>
         /// <param name="addRefreshToken">Use-case для добавления refresh-токена.</param>
-        public LoginUseCase(IJwtTokenService jwtTokenService, 
-            IValidationUseCase validationUseCase,
-            IGetUserByEmailUseCase emailUseCase,
-            IAddRefreshTokenUseCase addRefreshToken)
+        /// <param name="mapper"> для маппинга сущностей.</param>
+        public LoginUseCase(
+            IUserRepository userRepository,
+            IRefreshTokenRepository refreshTokenRepository,
+            IJwtTokenService jwtTokenService,
+            ILoginValidationService validationUseCase,
+            IMapper mapper)
         {
+            _userRepository = userRepository;
+            _refreshTokenRepository = refreshTokenRepository;
             _jwtTokenService = jwtTokenService;
             _validationUseCase = validationUseCase;
-            _emailUseCase = emailUseCase;
-            _addRefreshToken = addRefreshToken;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -51,23 +54,18 @@ namespace WebLibrary.Application.UseCases.AuthUseCases;
             if (!validationResult.IsValid)
                 throw new UnauthorizedException("Invalid login request");
 
-            var user = await _emailUseCase.ExecuteAsync(request.Email);
+            var user = await _userRepository.GetByEmailAsync(request.Email);
             if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
                 throw new UnauthorizedException("Invalid email or password");
 
-            var accessToken = _jwtTokenService.GenerateAccessToken(user.UserId, user.RoleType);
-            var refreshToken = _jwtTokenService.GenerateRefreshToken(user.UserId);
+            var accessToken = _jwtTokenService.GenerateAccessToken(user.UserId, user.Role);
+            var refreshTokenDto = _jwtTokenService.GenerateRefreshToken(user.UserId);
 
-            await _addRefreshToken.ExecuteAsync(new RefreshTokenDto
-            {
-                RefreshTokenId = refreshToken.RefreshTokenId,
-                UserId = user.UserId,
-                Token = refreshToken.Token,
-                Expires = refreshToken.Expires,
-                IsRevoked = refreshToken.IsRevoked
-            });
+            var refreshTokenEntity = _mapper.Map<RefreshToken>(refreshTokenDto);
+            await _refreshTokenRepository.AddAsync(refreshTokenEntity);
 
-            return new LoginResult(accessToken, refreshToken.Token);
+            return new LoginResult(accessToken, refreshTokenDto.Token);
         }
+
     }
 

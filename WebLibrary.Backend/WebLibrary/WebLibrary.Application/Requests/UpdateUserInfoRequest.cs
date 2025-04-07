@@ -10,5 +10,5 @@ public class UpdateUserInfoRequest
     
     public string Email { get; set; } = "samaplemail@gmail.com";
 
-    public Roles RoleType { get; set; } = Roles.Admin;
+    public Roles RoleType { get; set; } = Roles.admin;
 }

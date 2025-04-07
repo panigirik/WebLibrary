@@ -29,8 +29,9 @@ public class NotificationRepository : INotificationRepository
     {
         return await _context.Notifications
             .Include(n => n.User)
-            .FirstOrDefaultAsync(n => n.UserId == id);
+            .FirstOrDefaultAsync(n => n.NotificationId == id);
     }
+
 
     /// <summary>
     /// Получает все уведомления.
@@ -89,14 +90,4 @@ public class NotificationRepository : INotificationRepository
             .ToListAsync();
     }
 
-    /// <summary>
-    /// Получает все просроченные книги.
-    /// </summary>
-    /// <returns>Список просроченных книг.</returns>
-    public async Task<IEnumerable<Book>> GetOverdueBooksAsync()
-    {
-        return await _context.Books
-            .Where(b => b.BorrowedAt <= DateTime.UtcNow.AddDays(14) && !b.IsAvailable)
-            .ToListAsync();
-    }
 }

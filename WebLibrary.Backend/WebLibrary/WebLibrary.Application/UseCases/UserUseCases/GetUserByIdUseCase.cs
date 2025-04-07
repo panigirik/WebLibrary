@@ -31,10 +31,8 @@ namespace WebLibrary.Application.UseCases.UserUseCases;
         /// <returns>Пользователь в виде <see cref="UserDto"/>, если найден.</returns>
         public async Task<UserDto?> ExecuteAsync(Guid id)
         {
-            // Получаем пользователя по идентификатору из репозитория
             var user = await _userRepository.GetByIdAsync(id);
 
-            // Маппим сущность пользователя в DTO и возвращаем результат
             return _mapper.Map<UserDto?>(user);
         }
     }

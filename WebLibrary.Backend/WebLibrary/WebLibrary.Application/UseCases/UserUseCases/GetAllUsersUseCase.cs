@@ -30,10 +30,7 @@ namespace WebLibrary.Application.UseCases.UserUseCases;
         /// <returns>Список пользователей в виде <see cref="UserDto"/>.</returns>
         public async Task<IEnumerable<UserDto>> ExecuteAsync()
         {
-            // Получаем всех пользователей из репозитория
             var users = await _userRepository.GetAllAsync();
-
-            // Маппим сущности пользователей в DTO
             return _mapper.Map<IEnumerable<UserDto>>(users);
         }
     }

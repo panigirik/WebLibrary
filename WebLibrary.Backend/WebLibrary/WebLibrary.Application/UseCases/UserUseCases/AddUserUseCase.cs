@@ -2,6 +2,7 @@
 using FluentValidation;
 using WebLibrary.Application.Dtos;
 using WebLibrary.Application.Interfaces.UseCaseIntefaces.UserInterfaces;
+using WebLibrary.Application.Interfaces.ValidationInterfaces;
 using WebLibrary.Domain.Entities;
 using WebLibrary.Domain.Interfaces;
 
@@ -14,16 +15,20 @@ namespace WebLibrary.Application.UseCases.UserUseCases;
     {
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
+        private readonly IAddUserValidationService _addUserUseCaseValidation;
 
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="AddUserUseCase"/>.
         /// </summary>
         /// <param name="userRepository">Репозиторий для работы с пользователями.</param>
         /// <param name="mapper">Объект для маппинга между сущностями и DTO.</param>
-        public AddUserUseCase(IUserRepository userRepository, IMapper mapper)
+        public AddUserUseCase(IUserRepository userRepository,
+            IMapper mapper,
+            IAddUserValidationService addUserUseCaseValidation)
         {
             _userRepository = userRepository;
             _mapper = mapper;
+            _addUserUseCaseValidation = addUserUseCaseValidation;
         }
 
         /// <summary>
@@ -34,6 +39,7 @@ namespace WebLibrary.Application.UseCases.UserUseCases;
         /// <exception cref="ValidationException">Бросает исключение, если пользователь с таким email уже существует.</exception>
         public async Task ExecuteAsync(UserDto userDto)
         {
+            await _addUserUseCaseValidation.ValidateAsync(userDto);
             var existingUser = await _userRepository.GetByEmailAsync(userDto.Email);
             if (existingUser != null)
             {

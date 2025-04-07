@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
 using FluentValidation;
+using WebLibrary.Application.Interfaces.Cache;
+using WebLibrary.Application.Interfaces.ServiceInterfaces;
 using WebLibrary.Application.Interfaces.UseCaseIntefaces.BookInterfaces;
-using WebLibrary.Application.Interfaces.UseCaseIntefaces.ImageInterfaces;
 using WebLibrary.Application.Interfaces.ValidationInterfaces;
 using WebLibrary.Application.Requests;
 using WebLibrary.Domain.Entities;
@@ -16,9 +17,10 @@ namespace WebLibrary.Application.UseCases.BookUseCases;
     {
         private readonly IBookRepository _bookRepository;
         private readonly IMapper _mapper;
-        private readonly IAddBookUseCaseValidation _useCaseValidation;
-        private readonly IProcessAndStoreImageUseCase _processAndStrore;
-
+        private readonly IAddBookValidationService _useCaseValidation;
+        private readonly IImageService _imageService;
+        private readonly ICacheService _cacheService;
+        
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="AddBookUseCase"/>.
         /// </summary>
@@ -28,13 +30,15 @@ namespace WebLibrary.Application.UseCases.BookUseCases;
         /// <param name="processAndStrore">Use-case для обработки и сохранения изображения книги.</param>
         public AddBookUseCase(IBookRepository bookRepository,
             IMapper mapper,
-            IAddBookUseCaseValidation useCaseValidation,
-            IProcessAndStoreImageUseCase processAndStrore)
+            IAddBookValidationService useCaseValidation,
+            IImageService imageService,
+            ICacheService cacheService)
         {
             _bookRepository = bookRepository;
             _mapper = mapper;
             _useCaseValidation = useCaseValidation;
-            _processAndStrore = processAndStrore;
+            _imageService = imageService;
+            _cacheService = cacheService;
         }
 
         /// <summary>
@@ -58,10 +62,11 @@ namespace WebLibrary.Application.UseCases.BookUseCases;
 
             if (bookRequest.ImageFile != null)
             {
-                book.ImageData = await _processAndStrore.ExecuteAsync(bookRequest.ImageFile);
+                book.ImageData = await _imageService.ProcessImageAsync(bookRequest.ImageFile);
             }
-
+            
             await _useCaseValidation.ExecuteAsync(bookRequest, bookRequest.ImageFile);
+            await _cacheService.SetAsync($"book:{book.BookId}", book, TimeSpan.FromHours(1));
             await _bookRepository.AddAsync(book);
         }
     }

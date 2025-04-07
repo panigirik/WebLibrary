@@ -1,7 +1,4 @@
-﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Distributed;
-using WebLibrary.BackgroundService.Redis;
+﻿using Microsoft.EntityFrameworkCore;
 using WebLibrary.Domain.Entities;
 using WebLibrary.Domain.Enums;
 using WebLibrary.Domain.Filters;
@@ -15,9 +12,7 @@ namespace WebLibrary.Persistance.Repositories;
 public class BookRepository : IBookRepository
 {
     private readonly ApplicationDbContext _context;
-    private readonly RedisCacheService _redisCacheService;
-    private readonly IMapper _mapper;
-
+    
     /// <summary>
     /// Конструктор репозитория.
     /// </summary>
@@ -140,11 +135,7 @@ public class BookRepository : IBookRepository
 
         await _context.Books.AddAsync(book);
         await _context.SaveChangesAsync();
-
-        var cacheOptions = new DistributedCacheEntryOptions
-        {
-            AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1)
-        };
+        
     }
 
     /// <summary>

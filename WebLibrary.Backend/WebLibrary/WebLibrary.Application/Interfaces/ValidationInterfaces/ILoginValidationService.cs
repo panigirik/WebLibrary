@@ -6,7 +6,7 @@ namespace WebLibrary.Application.Interfaces.ValidationInterfaces;
 /// <summary>
 /// Интерфейс для валидации запросов и пользователей.
 /// </summary>
-public interface IValidationUseCase
+public interface ILoginValidationService
 {
     /// <summary>
     /// Асинхронно выполняет валидацию запроса на вход в систему.

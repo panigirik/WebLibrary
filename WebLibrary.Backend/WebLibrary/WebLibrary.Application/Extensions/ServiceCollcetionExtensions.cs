@@ -1,16 +1,19 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using StackExchange.Redis;
+using WebLibrary.Application.Interfaces.Cache;
+using WebLibrary.Application.Interfaces.ServiceInterfaces;
 using WebLibrary.Application.Interfaces.UseCaseIntefaces.AuthInterfaces;
 using WebLibrary.Application.Interfaces.UseCaseIntefaces.AuthorInterfaces;
 using WebLibrary.Application.Interfaces.UseCaseIntefaces.BookInterfaces;
-using WebLibrary.Application.Interfaces.UseCaseIntefaces.ImageInterfaces;
 using WebLibrary.Application.Interfaces.UseCaseIntefaces.NotificationInterfaces;
 using WebLibrary.Application.Interfaces.UseCaseIntefaces.RefreshTokenInterfaces;
 using WebLibrary.Application.Interfaces.UseCaseIntefaces.UserInterfaces;
 using WebLibrary.Application.Mappings;
+using WebLibrary.Application.Redis;
+using WebLibrary.Application.Services;
 using WebLibrary.Application.UseCases.AuthorUseCases;
 using WebLibrary.Application.UseCases.AuthUseCases;
 using WebLibrary.Application.UseCases.BookUseCases;
-using WebLibrary.Application.UseCases.ImageUseCases;
 using WebLibrary.Application.UseCases.NotificationsUseCases;
 using WebLibrary.Application.UseCases.RefreshTokenUseCases;
 using WebLibrary.Application.UseCases.UserUseCases;
@@ -26,28 +29,29 @@ public static class ServiceCollectionExtensions
 {
     public static void AddCoreApplicationServices(this IServiceCollection services)
     {
-        //services.AddServices();
+        services.AddServices();
         services.AddMappings();
         services.AddAuthorUseCases();
         services.AddAuthUseCases();
         services.AddBookUseCases();
-        services.AddImageUseCases();
         services.AddNotificationUseCases();
         services.AddRefreshTokenUseCases();
         services.AddUserUseCases();
+        
+        services.AddSingleton<RedisConnectionExtension>();
+        services.AddScoped<ICacheService, RedisCacheService>();
+        services.AddSingleton<IConnectionMultiplexer>(sp =>
+        {
+            var redisConnectionExtension = sp.GetRequiredService<RedisConnectionExtension>();
+            return redisConnectionExtension.Connect();
+        });
     }
 
-    /*
+    
     private static void AddServices(this IServiceCollection services)
     {
-        services.AddScoped<IBookService, BookService>();
-        services.AddScoped<IUserService, UserService>();
-        services.AddScoped<IAuthorService, AuthorService>();
-        services.AddScoped<IAuthService, AuthService>();
-        services.AddScoped<INotificationService, NotificationService>();
-        services.AddScoped<IRefreshTokenService, RefreshTokenService>();
         services.AddScoped<IImageService, ImageService>();
-    } */
+    } 
 
     private static void AddMappings(this IServiceCollection services)
     {
@@ -72,7 +76,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<ILoginUseCase, LoginUseCase>();
         services.AddScoped<ILogoutUseCase, LogoutUseCase>();
-        services.AddScoped<IAddRefreshTokenUseCase, AddRefreshTokenUseCase>();
+        services.AddScoped<IRefreshTokenUseCase, RefreshTokenUseCase>();
     }
 
     private static void AddBookUseCases(this IServiceCollection services)
@@ -90,11 +94,6 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IUpdateBookUseCase, UpdateBookUseCase>();
     }
 
-    private static void AddImageUseCases(this IServiceCollection services)
-    {
-        services.AddScoped<IGetImageUseCase, GetImageUseCase>();
-        services.AddScoped<IProcessAndStoreImageUseCase, ProcessAndStoreImageUseCase>();
-    }
 
     private static void AddNotificationUseCases(this IServiceCollection services)
     {

@@ -16,9 +16,8 @@ public static class AuthorizationPolicies
     {
         services.AddAuthorization(options =>
         {
-            // Добавление политики для роли "Admin"
             options.AddPolicy("AdminOnly", policy =>
-                policy.RequireRole("Admin"));
+                policy.RequireRole("admin"));
         });
     }
 }

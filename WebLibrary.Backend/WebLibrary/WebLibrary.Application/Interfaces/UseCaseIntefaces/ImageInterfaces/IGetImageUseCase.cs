@@ -3,7 +3,7 @@
 /// <summary>
 /// Интерфейс для получения изображения книги.
 /// </summary>
-public interface IGetImageUseCase
+public interface IGetImageService
 {
     Task<byte[]?> ExecuteAsync(Guid bookId);
 }

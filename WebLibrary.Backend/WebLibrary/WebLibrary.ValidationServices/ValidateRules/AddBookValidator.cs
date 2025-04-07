@@ -6,9 +6,9 @@ namespace WebLibrary.ValidationServices.ValidateRules
     /// <summary>
     /// Валидатор для DTO книги.
     /// </summary>
-    public class BookValidator : AbstractValidator<AddBookRequest>
+    public class AddBookValidator : AbstractValidator<AddBookRequest>
     {
-        public BookValidator()
+        public AddBookValidator()
         {
             RuleFor(b => b.ISBN)
                 .NotEmpty().WithMessage("ISBN is required.")

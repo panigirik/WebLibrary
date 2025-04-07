@@ -8,7 +8,7 @@ namespace WebLibrary.ValidationServices.UseCases;
 /// <summary>
 /// Сервис для выполнения use-case валидации запросов и пользователей.
 /// </summary>
-public class ValidationUseCase : IValidationUseCase
+public class LoginValidationService : ILoginValidationService
 {
     private readonly IValidator<LoginRequest> _loginRequestValidator;
 
@@ -16,7 +16,7 @@ public class ValidationUseCase : IValidationUseCase
     /// Инициализирует новый экземпляр <see cref="ValidationUseCase"/>.
     /// </summary>
     /// <param name="loginRequestValidator">Валидатор для запросов логина.</param>
-    public ValidationUseCase(IValidator<LoginRequest> loginRequestValidator)
+    public LoginValidationService(IValidator<LoginRequest> loginRequestValidator)
     {
         _loginRequestValidator = loginRequestValidator;
     }

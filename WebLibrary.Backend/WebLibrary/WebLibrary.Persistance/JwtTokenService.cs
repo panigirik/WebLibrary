@@ -4,7 +4,6 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using WebLibrary.Application.Interfaces;
 using WebLibrary.Domain.Entities;
 using WebLibrary.Domain.Enums;
 using WebLibrary.Domain.Interfaces;
@@ -47,13 +46,15 @@ public class JwtTokenService : IJwtTokenService
         using var rng = RandomNumberGenerator.Create();
         var randomBytes = new byte[32];
         rng.GetBytes(randomBytes);
+
         return new RefreshToken
         {
             RefreshTokenId = Guid.NewGuid(),
             UserId = userId,
             Token = Convert.ToBase64String(randomBytes),
-            Expires = DateTime.UtcNow.AddDays(7), 
+            Expires = DateTime.UtcNow.AddDays(7),
             IsRevoked = false
         };
     }
+
 }

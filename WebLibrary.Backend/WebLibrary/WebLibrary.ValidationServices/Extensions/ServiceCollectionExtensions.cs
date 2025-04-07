@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
+using WebLibrary.Application.Dtos;
 using WebLibrary.Application.Interfaces.UseCases;
 using WebLibrary.Application.Interfaces.ValidationInterfaces;
 using WebLibrary.Application.Requests;
@@ -21,16 +22,18 @@ public static class ServiceCollectionExtensions
     public static void AddCoreApplicationValidationServices(this IServiceCollection services)
     {
 
-        services.AddScoped<IValidationUseCase, ValidationUseCase>();
-        services.AddScoped<IAddBookUseCaseValidation, AddBookUseCaseValidation>();
-        services.AddScoped<IUpdateUserInfoUseCase, UpdateUserInfoUseCase>();
-        services.AddScoped<IUpdateBookUseCaseValidation, UpdateBookUseCaseValidation>();
+        services.AddScoped<ILoginValidationService, LoginValidationService>();
+        services.AddScoped<IAddBookValidationService, AddBookValidationService>();
+        services.AddScoped<IAddUserValidationService, AddUserValidationService>();
+        services.AddScoped<IUpdateUserValidationService, UpdateUserValidationService>();
+        services.AddScoped<IUpdateBookValidationService, UpdateBookValidationService>();
 
         services.AddScoped<IValidator<LoginRequest>, LoginRequestValidator>();
-        services.AddScoped<IValidator<AddBookRequest>, BookValidator>();
+        services.AddScoped<IValidator<AddBookRequest>, AddBookValidator>();
         services.AddScoped<IValidator<UpdateBookRequest>, UpdateBookValidator>();
-        services.AddScoped<IValidator<UpdateUserInfoRequest>, UserValidator>();
-        services.AddScoped<IValidator<UpdateUserInfoRequest>, UserValidator>();
+        services.AddScoped<IValidator<UserDto>, UserDtoValidator>();
+        services.AddScoped<IValidator<UpdateUserInfoRequest>, UpdateUserInfoValidator>();
+        services.AddScoped<IValidator<UpdateUserInfoRequest>, UpdateUserInfoValidator>();
 
         services.AddScoped<ScanFileForMalwareHelper>(); 
     }

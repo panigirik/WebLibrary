@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using WebLibrary.Application.Dtos;
-using WebLibrary.Application.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using WebLibrary.Application.Interfaces.UseCaseIntefaces.AuthorInterfaces;
 
@@ -11,6 +10,7 @@ namespace WebLibrary.Controllers;
 /// </summary>
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class AuthorsController : ControllerBase
 {
     private readonly IGetAllAuthorsUseCase _getAllAuthorsUseCase;
@@ -19,6 +19,7 @@ public class AuthorsController : ControllerBase
     private readonly IUpdateAuthorUseCase _updateAuthorUseCase;
     private readonly IDeleteAuthorUseCase _deleteAuthorUseCase;
     private readonly IGetBooksAuthorUseCase _getBooksByAuthorUseCase;
+    private readonly ILogger<AuthController> _logger;
 
     public AuthorsController(
         IGetAllAuthorsUseCase getAllAuthorsUseCase,
@@ -26,7 +27,8 @@ public class AuthorsController : ControllerBase
         IAddAuthorUseCase addAuthorUseCase,
         IUpdateAuthorUseCase updateAuthorUseCase,
         IDeleteAuthorUseCase deleteAuthorUseCase,
-        IGetBooksAuthorUseCase getBooksByAuthorUseCase)
+        IGetBooksAuthorUseCase getBooksByAuthorUseCase,
+        ILogger<AuthController> logger)
     {
         _getAllAuthorsUseCase = getAllAuthorsUseCase;
         _getAuthorByIdUseCase = getAuthorByIdUseCase;
@@ -34,6 +36,7 @@ public class AuthorsController : ControllerBase
         _updateAuthorUseCase = updateAuthorUseCase;
         _deleteAuthorUseCase = deleteAuthorUseCase;
         _getBooksByAuthorUseCase = getBooksByAuthorUseCase;
+        _logger = logger;
     }
 
     [HttpGet]
@@ -58,13 +61,33 @@ public class AuthorsController : ControllerBase
         return CreatedAtAction(nameof(GetAuthorById), new { id = authorDto.AuthorId }, authorDto);
     }
 
-    [HttpPut("{id:guid}")] 
+    [HttpPut("{id:guid}")]
     [Authorize(Policy = "AdminOnly")]
     public async Task<IActionResult> UpdateAuthor(Guid id, [FromBody] AuthorDto authorDto)
     {
+        _logger.LogInformation("Checking authorization for user");
+
+        // Логируем информацию о текущем пользователе
+        var user = User;
+        if (user == null)
+        {
+            _logger.LogWarning("User is not authenticated.");
+            return Unauthorized();
+        }
+
+        var isAdmin = user.IsInRole("Admin");
+        _logger.LogInformation($"User is admin: {isAdmin}");
+
+        if (!isAdmin)
+        {
+            _logger.LogWarning("User does not have Admin role.");
+            return Forbid(); // Можно явно вернуть ошибку с 403
+        }
+
         await _updateAuthorUseCase.ExecuteAsync(authorDto);
         return NoContent();
     }
+
 
     [HttpDelete("{id:guid}")] 
     [Authorize(Policy = "AdminOnly")]

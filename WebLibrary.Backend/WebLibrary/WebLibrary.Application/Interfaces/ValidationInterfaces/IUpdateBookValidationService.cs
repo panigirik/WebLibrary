@@ -5,7 +5,7 @@ namespace WebLibrary.Application.Interfaces.ValidationInterfaces;
     /// <summary>
     /// Интерфейс для валидации обновления книги.
     /// </summary>
-    public interface IUpdateBookUseCaseValidation
+    public interface IUpdateBookValidationService
     {
         /// <summary>
         /// Метод для валидации данных для обновления книги.

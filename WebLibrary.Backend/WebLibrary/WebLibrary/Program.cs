@@ -1,6 +1,6 @@
-using WebLibrary.Application.ExceptionsHandling;
 using WebLibrary.Application.Extensions;
 using WebLibrary.BackgroundService.Extensions;
+using WebLibrary.ExceptionsHandling;
 using WebLibrary.Indentity.Extensions;
 using WebLibrary.Persistance.Extensions;
 using WebLibrary.Policies;
@@ -60,7 +60,6 @@ public class Program
         app.MapControllers();
         app.UseAuthorization();
 
-        // Ensure Swagger is always enabled
         app.UseSwagger();
         app.UseSwaggerUI();
 

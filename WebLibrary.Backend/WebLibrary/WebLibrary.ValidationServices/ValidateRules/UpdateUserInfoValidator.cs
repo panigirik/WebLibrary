@@ -6,9 +6,9 @@ namespace WebLibrary.ValidationServices.ValidateRules;
 /// <summary>
 /// Валидатор для обновления данных о пользователе.
 /// </summary>
-public class UserValidator: AbstractValidator<UpdateUserInfoRequest>
+public class UpdateUserInfoValidator: AbstractValidator<UpdateUserInfoRequest>
 {
-    public UserValidator()
+    public UpdateUserInfoValidator()
     {
         RuleFor(p => p.UserName).NotEmpty().WithMessage("UserName cannot be empty");
         RuleFor(p => p.Email).NotEmpty().Matches("[A-Z]")

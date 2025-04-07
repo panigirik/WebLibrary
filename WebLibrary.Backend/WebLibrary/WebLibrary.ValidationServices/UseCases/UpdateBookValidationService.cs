@@ -8,11 +8,11 @@ namespace WebLibrary.ValidationServices.UseCases;
     /// <summary>
     /// Сервис валидации для обновления книги.
     /// </summary>
-    public class UpdateBookUseCaseValidation : IUpdateBookUseCaseValidation
+    public class UpdateBookValidationService : IUpdateBookValidationService
     {
         private readonly AbstractValidator<UpdateBookRequest> _validator;
 
-        public UpdateBookUseCaseValidation()
+        public UpdateBookValidationService()
         {
             _validator = new UpdateBookValidator();
         }

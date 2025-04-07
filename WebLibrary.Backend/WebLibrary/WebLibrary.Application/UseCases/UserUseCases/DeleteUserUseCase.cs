@@ -28,14 +28,12 @@ namespace WebLibrary.Application.UseCases.UserUseCases;
         /// <exception cref="NotFoundException">Бросает исключение, если пользователь с таким идентификатором не найден.</exception>
         public async Task ExecuteAsync(Guid id)
         {
-            // Проверка существования пользователя с данным id
             var existingUser = await _userRepository.GetByIdAsync(id);
             if (existingUser == null)
             {
                 throw new NotFoundException("User not found");
             }
 
-            // Удаление пользователя из репозитория
             await _userRepository.DeleteAsync(id);
         }
     }

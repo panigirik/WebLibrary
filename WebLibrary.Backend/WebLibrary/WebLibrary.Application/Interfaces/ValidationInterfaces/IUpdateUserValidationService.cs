@@ -6,7 +6,7 @@ namespace WebLibrary.Application.Interfaces.UseCases
     /// <summary>
     /// Интерфейс валидации обновления информации о пользователе.
     /// </summary>
-    public interface IUpdateUserInfoUseCase
+    public interface IUpdateUserValidationService
     {
         /// <summary>
         /// Асинхронно выполняет валидацию и обновление информации о пользователе.

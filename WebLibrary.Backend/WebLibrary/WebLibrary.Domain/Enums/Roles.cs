@@ -8,11 +8,11 @@
         /// <summary>
         /// Роль администратора.
         /// </summary>
-        Admin = 1,
+        admin = 1,
 
         /// <summary>
         /// Роль обычного пользователя.
         /// </summary>
-        User = 2
+        user = 2
     }
 }

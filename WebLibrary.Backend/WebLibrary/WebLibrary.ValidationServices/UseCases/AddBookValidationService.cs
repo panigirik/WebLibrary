@@ -15,7 +15,7 @@ namespace WebLibrary.ValidationServices.UseCases;
     /// <summary>
     /// Сервис для валидации книг.
     /// </summary>
-    public class AddBookUseCaseValidation : IAddBookUseCaseValidation
+    public class AddBookValidationService : IAddBookValidationService
     {
         private readonly ScanFileForMalwareHelper _scanFileForMalwareHelper;
         private readonly IValidator<AddBookRequest> _bookValidator;
@@ -29,10 +29,10 @@ namespace WebLibrary.ValidationServices.UseCases;
         /// </summary>
         /// <param name="scanFileForMalwareHelper">Сервис для проверки файлов на вирусы.</param>
         /// <param name="configuration">Конфигурация приложения.</param>
-        public AddBookUseCaseValidation(ScanFileForMalwareHelper scanFileForMalwareHelper, IConfiguration configuration)
+        public AddBookValidationService(ScanFileForMalwareHelper scanFileForMalwareHelper, IConfiguration configuration)
         {
             _scanFileForMalwareHelper = scanFileForMalwareHelper;
-            _bookValidator = new BookValidator();
+            _bookValidator = new AddBookValidator();
             _maxFileSizeMb = int.Parse(configuration["BookAttachment:MaxFileSizeMB"]);
             _maxResolution = int.Parse(configuration["BookAttachment:MaxResolution"]);
             _allowedFormats = configuration.GetSection("BookAttachment:AllowedFormats").Get<string[]>() ?? Array.Empty<string>();

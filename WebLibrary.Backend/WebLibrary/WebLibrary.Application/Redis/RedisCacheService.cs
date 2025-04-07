@@ -1,12 +1,13 @@
 ﻿using System.Text.Json;
 using Microsoft.Extensions.Caching.Distributed;
+using WebLibrary.Application.Interfaces.Cache;
 
-namespace WebLibrary.BackgroundService.Redis;
+namespace WebLibrary.Application.Redis;
 
     /// <summary>
     /// Сервис для работы с кэшем Redis.
     /// </summary>
-    public class RedisCacheService
+    public class RedisCacheService: ICacheService
     {
         private readonly IDistributedCache _cache;
 
@@ -26,12 +27,17 @@ namespace WebLibrary.BackgroundService.Redis;
         /// <param name="key">Ключ для данных.</param>
         /// <param name="value">Данные для сохранения.</param>
         /// <param name="options">Опции для записи в кэш.</param>
-        public async Task SetAsync<T>(string key, T value, DistributedCacheEntryOptions options)
+        public async Task SetAsync<T>(string key, T value, TimeSpan? absoluteExpireTime = null)
         {
-            var jsonData = JsonSerializer.Serialize(value);
-            await _cache.SetStringAsync(key, jsonData, options);
-        }
+            var options = new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = absoluteExpireTime ?? TimeSpan.FromHours(1)
+            };
 
+            var json = JsonSerializer.Serialize(value);
+            await _cache.SetStringAsync(key, json, options);
+        }
+        
         /// <summary>
         /// Получение данных из Redis.
         /// </summary>

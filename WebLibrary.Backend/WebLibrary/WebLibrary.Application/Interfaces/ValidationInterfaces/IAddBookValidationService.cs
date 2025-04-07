@@ -7,7 +7,7 @@ namespace WebLibrary.Application.Interfaces.ValidationInterfaces
     /// <summary>
     /// Интерфейс для валидации добавления книги.
     /// </summary>
-    public interface IAddBookUseCaseValidation
+    public interface IAddBookValidationService
     {
         /// <summary>
         /// Асинхронно выполняет валидацию и добавление книги.
