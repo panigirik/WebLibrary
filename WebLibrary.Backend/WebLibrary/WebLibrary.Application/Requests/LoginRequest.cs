@@ -1,4 +1,6 @@
-﻿namespace WebLibrary.Application.Requests
+﻿using WebLibrary.Domain.Enums;
+
+namespace WebLibrary.Application.Requests
 {
     /// <summary>
     /// Запрос для выполнения входа в систему.
@@ -14,5 +16,6 @@
         /// Пароль пользователя.
         /// </summary>
         public string Password { get; set; }
+
     }
 }

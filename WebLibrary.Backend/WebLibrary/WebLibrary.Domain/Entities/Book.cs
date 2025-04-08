@@ -12,7 +12,7 @@ namespace WebLibrary.Domain.Entities
         /// <summary>
         /// Уникальный идентификатор книги.
         /// </summary>
-        public Guid BookId { get; set; }
+        public Guid BookId { get; set; } = new Guid();
 
         /// <summary>
         /// Международный стандартный книжный номер (ISBN).

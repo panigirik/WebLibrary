@@ -62,15 +62,11 @@ public class RefreshTokenRepository : IRefreshTokenRepository
     /// <summary>
     /// Удаляет refresh токен по идентификатору.
     /// </summary>
-    /// <param name="id">Идентификатор refresh токена для удаления.</param>
-    public async Task DeleteAsync(Guid id)
+    /// <param name="token">Dto refresh-токена для удаления.</param>
+    public async Task DeleteAsync(RefreshToken token)
     {
-        var refreshToken = await GetByIdAsync(id);
-        if (refreshToken != null)
-        {
-            _context.RefreshTokens.Remove(refreshToken);
-            await _context.SaveChangesAsync();
-        }
+        _context.RefreshTokens.Remove(token);
+        await _context.SaveChangesAsync();
     }
 
     /// <summary>

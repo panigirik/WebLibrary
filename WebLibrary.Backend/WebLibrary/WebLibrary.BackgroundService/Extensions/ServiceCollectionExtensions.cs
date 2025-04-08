@@ -1,8 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
-using WebLibrary.Application.Redis;
+using WebLibrary.Application.Interfaces.Cache;
+using WebLibrary.Application.Interfaces.ServiceInterfaces;
 using WebLibrary.BackgroundService.ClamAV;
+using WebLibrary.BackgroundService.Redis;
 using WebLibrary.BackgroundService.Services;
 
 namespace WebLibrary.BackgroundService.Extensions;
@@ -23,6 +25,18 @@ namespace WebLibrary.BackgroundService.Extensions;
             services.AddScoped<RedisCacheService>();
             services.AddDistributedMemoryCache();
             services.AddScoped<ScanFileForMalwareHelper>();
+            services.AddSingleton<RedisConnectionExtension>();
+            services.AddScoped<ICacheService, RedisCacheService>();
+            services.AddSingleton<IConnectionMultiplexer>(sp =>
+            {
+                var redisConnectionExtension = sp.GetRequiredService<RedisConnectionExtension>();
+                return redisConnectionExtension.Connect();
+            });
+            
+
+  
 
         }
+        
+        
     }

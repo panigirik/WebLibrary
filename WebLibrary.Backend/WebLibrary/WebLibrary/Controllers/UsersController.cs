@@ -106,12 +106,12 @@ public class UsersController : ControllerBase
     /// <summary>
     /// Удалить пользователя.
     /// </summary>
-    /// <param name="id">Guid для поиска пользователя.</param>
+    /// <param name="userDto">Dto для удаления пользователя.</param>
     /// <returns>NoContent().</returns>
     [HttpDelete("{id}")]
-    public async Task<ActionResult> DeleteUser(Guid id)
+    public async Task<ActionResult> DeleteUser(UserDto userDto)
     {
-        await _deleteUserUseCase.ExecuteAsync(id);
+        await _deleteUserUseCase.ExecuteAsync(userDto);
         return NoContent();
     }
 }

@@ -20,23 +20,25 @@ namespace WebLibrary.Indentity.Extensions;
                 .AddJwtBearer(options =>
                 {
                     options.RequireHttpsMetadata = false;
-                options.SaveToken = true;
+                    options.SaveToken = true;
                     options.UseSecurityTokenValidators = true;
-                    options.SaveToken = false; 
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = false,
-                    ValidateAudience = false,
-                    ValidateLifetime = false,
-                    ValidateIssuerSigningKey = false,
+                        ValidateAudience = false,
+                        ValidateLifetime = false,
+                        ValidateIssuerSigningKey = false,
                         ValidIssuer = configuration["Jwt:Issuer"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"] ?? ""))
+                        ValidAudience = configuration["Jwt:Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]))
                     };
+
+
                     options.Events = new JwtBearerEvents
                     {
                         OnAuthenticationFailed = context =>
                         {
-                        Console.WriteLine("Token invalid: " + context.Exception.ToString());
+                        Console.WriteLine("Token invalid: " + context.Exception);
                             if (!context.Response.HasStarted)
                             {
                                 context.Response.StatusCode = 401;
@@ -56,5 +58,11 @@ namespace WebLibrary.Indentity.Extensions;
                         }
                     };
                 });
+            
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("AdminOnly", policy =>
+                    policy.RequireRole("admin"));
+            });
         }
     }

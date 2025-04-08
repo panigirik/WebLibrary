@@ -131,8 +131,6 @@ public class BookRepository : IBookRepository
     /// <param name="book">Книга.</param>
     public async Task AddAsync(Book book)
     {
-        book.BookId = Guid.NewGuid();
-
         await _context.Books.AddAsync(book);
         await _context.SaveChangesAsync();
         
@@ -144,27 +142,17 @@ public class BookRepository : IBookRepository
     /// <param name="updatedBook">Обновленная книга.</param>
     public async Task UpdateAsync(Book updatedBook)
     {
-        var book = await _context.Books.FirstOrDefaultAsync(b => b.BookId == updatedBook.BookId);
-        if (book == null) return;
-
-        book.Title = updatedBook.Title;
-        book.AuthorId = updatedBook.AuthorId;
-
-        _context.Books.Update(book);
+        _context.Books.Update(updatedBook);
         await _context.SaveChangesAsync();
     }
 
     /// <summary>
     /// Удалить книгу по идентификатору.
     /// </summary>
-    /// <param name="id">Идентификатор книги.</param>
-    public async Task DeleteAsync(Guid id)
+    /// <param name="book">Entity книги, которую надо удалить.</param>
+    public async Task DeleteAsync(Book book)
     {
-        var book = await _context.Books.FirstOrDefaultAsync(b => b.BookId == id);
-        if (book != null)
-        {
-            _context.Books.Remove(book);
-            await _context.SaveChangesAsync();
-        }
+        _context.Books.Remove(book);
+        await _context.SaveChangesAsync();
     }
 }

@@ -6,8 +6,8 @@ using SixLabors.ImageSharp;
 using WebLibrary.Application.Exceptions;
 using WebLibrary.Application.Interfaces.ValidationInterfaces;
 using WebLibrary.Application.Requests;
+using WebLibrary.Application.ValidateRules;
 using WebLibrary.BackgroundService.ClamAV;
-using WebLibrary.ValidationServices.ValidateRules;
 using ValidationException = FluentValidation.ValidationException;
 
 namespace WebLibrary.ValidationServices.UseCases;

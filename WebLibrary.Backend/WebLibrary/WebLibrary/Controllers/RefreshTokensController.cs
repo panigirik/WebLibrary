@@ -98,12 +98,12 @@ namespace WebLibrary.Controllers
         /// <summary>
         /// Удалить refresh-токен.
         /// </summary>
-        /// <param name="id">Идентификатор refresh-токена.</param>
+        /// <param name="refreshTokenDto">refresh-токен, который нужно удалить.</param>
         /// <returns>Результат операции удаления.</returns>
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteRefreshToken(Guid id)
+        public async Task<ActionResult> DeleteRefreshToken(RefreshTokenDto refreshTokenDto)
         {
-            await _deleteRefreshTokenUseCase.ExecuteAsync(id);
+            await _deleteRefreshTokenUseCase.ExecuteAsync(refreshTokenDto);
             return NoContent();
         }
     }

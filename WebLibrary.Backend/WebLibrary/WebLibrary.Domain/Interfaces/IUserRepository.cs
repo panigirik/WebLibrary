@@ -35,8 +35,8 @@ namespace WebLibrary.Domain.Interfaces
         /// <summary>
         /// Удалить пользователя по уникальному идентификатору.
         /// </summary>
-        /// <param name="id">Уникальный идентификатор пользователя.</param>
-        Task DeleteAsync(Guid id);
+        /// <param name="user">Entity пользователя, которого надо удалить.</param>
+        Task DeleteAsync(User user);
 
         /// <summary>
         /// Получить пользователя по email.

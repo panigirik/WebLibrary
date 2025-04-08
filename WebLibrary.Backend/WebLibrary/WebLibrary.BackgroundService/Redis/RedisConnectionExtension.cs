@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using StackExchange.Redis;
 
-namespace WebLibrary.Application.Redis;
+namespace WebLibrary.BackgroundService.Redis;
 
     /// <summary>
     /// Класс для подключения к Redis.

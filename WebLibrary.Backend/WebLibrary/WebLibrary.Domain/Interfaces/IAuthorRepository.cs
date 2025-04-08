@@ -35,7 +35,7 @@ namespace WebLibrary.Domain.Interfaces
         /// <summary>
         /// Удалить автора по уникальному идентификатору.
         /// </summary>
-        /// <param name="id">Уникальный идентификатор автора.</param>
-        Task DeleteAsync(Guid id);
+        /// <param name="author">Entity автора, которого надо удалить.</param>
+        Task DeleteAsync(Author author);
     }
 }

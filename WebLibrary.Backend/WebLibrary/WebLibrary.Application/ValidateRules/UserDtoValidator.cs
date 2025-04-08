@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using WebLibrary.Application.Dtos;
 
-namespace WebLibrary.ValidationServices.ValidateRules;
+namespace WebLibrary.Application.ValidateRules;
 
 /// <summary>
 /// Валидатор для обновления данных о пользователе.

@@ -35,8 +35,8 @@ namespace WebLibrary.Domain.Interfaces
         /// <summary>
         /// Удалить refresh токен по уникальному идентификатору.
         /// </summary>
-        /// <param name="id">Уникальный идентификатор токена.</param>
-        Task DeleteAsync(Guid id);
+        /// <param name="token">Entity токена, который надо удалить.</param>
+        Task DeleteAsync(RefreshToken token);
 
         /// <summary>
         /// Получить refresh токен по идентификатору пользователя.

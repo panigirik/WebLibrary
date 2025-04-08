@@ -106,12 +106,12 @@ namespace WebLibrary.Controllers
         /// <summary>
         /// Удалить уведомление по идентификатору.
         /// </summary>
-        /// <param name="id">Идентификатор уведомления.</param>
+        /// <param name="notificationDto">Dto нотификации, которую нужно удалить.</param>
         /// <returns>Результат операции удаления.</returns>
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteNotification(Guid id)
+        public async Task<ActionResult> DeleteNotification(NotificationDto notificationDto)
         {
-            await _deleteNotificationUseCase.ExecuteAsync(id);
+            await _deleteNotificationUseCase.ExecuteAsync(notificationDto);
             return NoContent();
         }
     }

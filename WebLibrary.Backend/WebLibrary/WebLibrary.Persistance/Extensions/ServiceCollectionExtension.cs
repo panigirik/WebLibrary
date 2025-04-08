@@ -1,8 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using WebLibrary.Application.Interfaces.ServiceInterfaces;
 using WebLibrary.Domain.Interfaces;
 using WebLibrary.Persistance.Repositories;
+using WebLibrary.Persistance.Service;
 
 namespace WebLibrary.Persistance.Extensions;
 
@@ -35,7 +37,7 @@ public static class ServiceCollectionExtension
         services.AddScoped<IBookRepository, BookRepository>();
         services.AddScoped<INotificationRepository, NotificationRepository>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
-
+        services.AddScoped<IImageService, ImageService>();
         services.AddScoped<IJwtTokenService, JwtTokenService>();
     }
 }

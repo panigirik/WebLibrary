@@ -1,4 +1,7 @@
-﻿using WebLibrary.Application.Interfaces.UseCaseIntefaces.RefreshTokenInterfaces;
+﻿using AutoMapper;
+using WebLibrary.Application.Dtos;
+using WebLibrary.Application.Interfaces.UseCaseIntefaces.RefreshTokenInterfaces;
+using WebLibrary.Domain.Entities;
 using WebLibrary.Domain.Interfaces;
 
 namespace WebLibrary.Application.UseCases.RefreshTokenUseCases;
@@ -9,23 +12,27 @@ namespace WebLibrary.Application.UseCases.RefreshTokenUseCases;
     public class DeleteRefreshTokenUseCase : IDeleteRefreshTokenUseCase
     {
         private readonly IRefreshTokenRepository _repository;
+        private readonly IMapper _mapper;
 
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="DeleteRefreshTokenUseCase"/>.
         /// </summary>
         /// <param name="repository">Репозиторий для работы с refresh-токенами.</param>
-        public DeleteRefreshTokenUseCase(IRefreshTokenRepository repository)
+        public DeleteRefreshTokenUseCase(IRefreshTokenRepository repository,
+            IMapper mapper)
         {
             _repository = repository;
+            _mapper = mapper;
         }
 
         /// <summary>
         /// Удаляет refresh-токен по его идентификатору.
         /// </summary>
-        /// <param name="id">Идентификатор refresh-токена, который нужно удалить.</param>
+        /// <param name="refreshTokenDto">refresh-токен, который нужно удалить.</param>
         /// <returns>Задача, представляющая асинхронную операцию удаления.</returns>
-        public async Task ExecuteAsync(Guid id)
+        public async Task ExecuteAsync(RefreshTokenDto refreshTokenDto)
         {
-            await _repository.DeleteAsync(id);
+            var refreshToken = _mapper.Map<RefreshToken>(refreshTokenDto);
+            await _repository.DeleteAsync(refreshToken);
         }
     }

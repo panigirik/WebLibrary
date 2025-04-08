@@ -3,7 +3,7 @@ using WebLibrary.Application.Exceptions;
 using WebLibrary.Application.Interfaces.ServiceInterfaces;
 using WebLibrary.Domain.Interfaces;
 
-namespace WebLibrary.Application.Services;
+namespace WebLibrary.Persistance.Service;
 
 /// <summary>
 /// Сервис для работы с изображениями книг (получение и сохранение).

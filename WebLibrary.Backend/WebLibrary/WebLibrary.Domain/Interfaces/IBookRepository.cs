@@ -50,8 +50,8 @@ namespace WebLibrary.Domain.Interfaces
         /// <summary>
         /// Удалить книгу по уникальному идентификатору.
         /// </summary>
-        /// <param name="id">Уникальный идентификатор книги.</param>
-        Task DeleteAsync(Guid id);
+        /// <param name="book">Entity книги, которую нужно удалить.</param>
+        Task DeleteAsync(Book book);
 
         /// <summary>
         /// Получить книги по идентификатору автора.

@@ -35,8 +35,8 @@ namespace WebLibrary.Domain.Interfaces
         /// <summary>
         /// Удалить уведомление по уникальному идентификатору.
         /// </summary>
-        /// <param name="id">Уникальный идентификатор уведомления.</param>
-        Task DeleteAsync(Guid id);
+        /// <param name="notification">Уникальный идентификатор уведомления.</param>
+        Task DeleteAsync(Notification notification);
 
         /// <summary>
         /// Получить уведомления по идентификатору пользователя.

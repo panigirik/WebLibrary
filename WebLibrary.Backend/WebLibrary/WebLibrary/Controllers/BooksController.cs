@@ -162,9 +162,9 @@ public class BooksController : ControllerBase
     /// Удаляет книгу по её идентификатору.
     /// </summary>
     [HttpDelete("{id}")] [Authorize(Policy = "AdminOnly")]
-    public async Task<ActionResult> DeleteBook(Guid id)
+    public async Task<ActionResult> DeleteBook(BookDto bookDto)
     {
-        await _deleteBookUseCase.ExecuteAsync(id);
+        await _deleteBookUseCase.ExecuteAsync(bookDto);
         return NoContent();
     }
 }

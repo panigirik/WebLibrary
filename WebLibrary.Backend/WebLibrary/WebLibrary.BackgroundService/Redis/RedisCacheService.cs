@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Caching.Distributed;
 using WebLibrary.Application.Interfaces.Cache;
 
-namespace WebLibrary.Application.Redis;
+namespace WebLibrary.BackgroundService.Redis;
 
     /// <summary>
     /// Сервис для работы с кэшем Redis.

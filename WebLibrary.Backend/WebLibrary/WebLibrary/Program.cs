@@ -57,9 +57,9 @@ public class Program
         app.UseRouting();
         
         app.UseCors("AllowAllOrigins");
-        app.MapControllers();
+        app.UseAuthentication();
         app.UseAuthorization();
-
+        app.MapControllers();
         app.UseSwagger();
         app.UseSwaggerUI();
 

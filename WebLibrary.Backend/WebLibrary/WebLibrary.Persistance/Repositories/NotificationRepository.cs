@@ -67,15 +67,11 @@ public class NotificationRepository : INotificationRepository
     /// <summary>
     /// Удаляет уведомление по идентификатору.
     /// </summary>
-    /// <param name="id">Идентификатор уведомления для удаления.</param>
-    public async Task DeleteAsync(Guid id)
+    /// <param name="notification">Нотификация, которую надо удалить.</param>
+    public async Task DeleteAsync(Notification notification)
     {
-        var notification = await GetByIdAsync(id);
-        if (notification != null)
-        {
-            _context.Notifications.Remove(notification);
-            await _context.SaveChangesAsync();
-        }
+        _context.Notifications.Remove(notification);
+        await _context.SaveChangesAsync();
     }
 
     /// <summary>

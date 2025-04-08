@@ -31,7 +31,7 @@ namespace WebLibrary.Domain.Entities
         /// <summary>
         /// Роль пользователя (например, User или Admin).
         /// </summary>
-        public Roles Role { get; set; }
+        public Roles Role { get; set; } = Roles.admin;
 
         /// <summary>
         /// Список книг, взятых пользователем.

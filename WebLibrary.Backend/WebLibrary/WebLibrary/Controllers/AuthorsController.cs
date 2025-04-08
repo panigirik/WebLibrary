@@ -45,7 +45,9 @@ public class AuthorsController : ControllerBase
         var authors = await _getAllAuthorsUseCase.ExecuteAsync();
         return Ok(authors);
     }
+    
 
+    
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetAuthorById(Guid id)
     {
@@ -63,27 +65,8 @@ public class AuthorsController : ControllerBase
 
     [HttpPut("{id:guid}")]
     [Authorize(Policy = "AdminOnly")]
-    public async Task<IActionResult> UpdateAuthor(Guid id, [FromBody] AuthorDto authorDto)
+    public async Task<IActionResult> UpdateAuthor([FromForm] AuthorDto authorDto)
     {
-        _logger.LogInformation("Checking authorization for user");
-
-        // Логируем информацию о текущем пользователе
-        var user = User;
-        if (user == null)
-        {
-            _logger.LogWarning("User is not authenticated.");
-            return Unauthorized();
-        }
-
-        var isAdmin = user.IsInRole("Admin");
-        _logger.LogInformation($"User is admin: {isAdmin}");
-
-        if (!isAdmin)
-        {
-            _logger.LogWarning("User does not have Admin role.");
-            return Forbid(); // Можно явно вернуть ошибку с 403
-        }
-
         await _updateAuthorUseCase.ExecuteAsync(authorDto);
         return NoContent();
     }
@@ -91,9 +74,9 @@ public class AuthorsController : ControllerBase
 
     [HttpDelete("{id:guid}")] 
     [Authorize(Policy = "AdminOnly")]
-    public async Task<IActionResult> DeleteAuthor(Guid id)
+    public async Task<IActionResult> DeleteAuthor(AuthorDto authorDto)
     {
-        await _deleteAuthorUseCase.ExecuteAsync(id);
+        await _deleteAuthorUseCase.ExecuteAsync(authorDto);
         return NoContent();
     }
 

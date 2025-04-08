@@ -65,10 +65,9 @@ public class AuthorRepository : IAuthorRepository
     /// Удалить автора по идентификатору.
     /// </summary>
     /// <param name="id">Идентификатор автора.</param>
-    public async Task DeleteAsync(Guid id)
+    public async Task DeleteAsync(Author author)
     {
-        var author = await GetByIdAsync(id);
-        _context.Authors.Remove(author);
+       _context.Authors.Remove(author);
         await _context.SaveChangesAsync();
     }
 }

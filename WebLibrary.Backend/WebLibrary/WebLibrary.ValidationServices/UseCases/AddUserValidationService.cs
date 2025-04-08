@@ -3,7 +3,7 @@ using WebLibrary.Application.Dtos;
 using WebLibrary.Application.Exceptions;
 using WebLibrary.Application.Interfaces.ValidationInterfaces;
 using WebLibrary.Application.Requests;
-using WebLibrary.ValidationServices.ValidateRules;
+using WebLibrary.Application.ValidateRules;
 
 namespace WebLibrary.ValidationServices.UseCases;
 

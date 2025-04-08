@@ -64,14 +64,10 @@ public class UserRepository : IUserRepository
     /// Удаляет пользователя по идентификатору.
     /// </summary>
     /// <param name="id">Идентификатор пользователя для удаления.</param>
-    public async Task DeleteAsync(Guid id)
+    public async Task DeleteAsync(User user)
     {
-        var user = await GetByIdAsync(id);
-        if (user != null)
-        {
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
-        }
+        _context.Users.Remove(user);
+        await _context.SaveChangesAsync();
     }
 
     /// <summary>

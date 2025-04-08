@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using WebLibrary.Application.Requests;
 
-namespace WebLibrary.ValidationServices.ValidateRules;
+namespace WebLibrary.Application.ValidateRules;
 
 /// <summary>
 /// Валидатор для запроса на обновление книги.
